@@ -112,6 +112,7 @@ def add_tire():
             supplier_part_number=request.form.get('supplier_part_number'),
             quantity_in_stock=request.form.get('quantity_in_stock', 0),
             reorder_level=request.form.get('reorder_level', 10),
+            warehouse_location=request.form.get('warehouse_location'),
             description=request.form.get('description'),
             warranty_months=request.form.get('warranty_months'),
             speed_rating=request.form.get('speed_rating'),
@@ -145,6 +146,7 @@ def edit_tire(tire_id):
         tire.supplier_part_number = request.form.get('supplier_part_number')
         tire.quantity_in_stock = request.form.get('quantity_in_stock')
         tire.reorder_level = request.form.get('reorder_level')
+        tire.warehouse_location = request.form.get('warehouse_location')
         tire.description = request.form.get('description')
         tire.warranty_months = request.form.get('warranty_months')
         tire.speed_rating = request.form.get('speed_rating')
@@ -211,6 +213,7 @@ def init_db():
                     supplier_part_number='MICH-PS4S-245-40-18',
                     quantity_in_stock=24,
                     reorder_level=10,
+                    warehouse_location='Warehouse A - Aisle 3 - Shelf B',
                     description='Ultra-high performance summer tire',
                     warranty_months=36,
                     speed_rating='Y',
@@ -229,6 +232,7 @@ def init_db():
                     supplier_part_number='BS-WS90-225-60-17',
                     quantity_in_stock=36,
                     reorder_level=15,
+                    warehouse_location='Warehouse B - Aisle 1 - Shelf A',
                     description='Premium winter tire with excellent ice traction',
                     warranty_months=48,
                     speed_rating='T',
@@ -247,6 +251,7 @@ def init_db():
                     supplier_part_number='GY-AWR-215-55-17',
                     quantity_in_stock=48,
                     reorder_level=20,
+                    warehouse_location='Warehouse A - Aisle 5 - Shelf C',
                     description='All-weather tire for year-round performance',
                     warranty_months=60,
                     speed_rating='H',
