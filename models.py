@@ -69,3 +69,17 @@ class Tire(db.Model):
     
     def __repr__(self):
         return f'<Tire {self.brand} {self.model} {self.size}>'
+
+
+class VehicleTireSize(db.Model):
+    """Vehicle to tire size mapping."""
+    __tablename__ = 'vehicle_tire_sizes'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    make = db.Column(db.String(50), nullable=False)
+    model = db.Column(db.String(50), nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+    tire_size = db.Column(db.String(50), nullable=False)
+    
+    def __repr__(self):
+        return f'<VehicleTireSize {self.year} {self.make} {self.model} - {self.tire_size}>'
