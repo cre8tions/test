@@ -51,6 +51,13 @@
                         <strong>Reorder Level:</strong>
                         <span>{{ tire.reorder_level }}</span>
                     </div>
+                    {% if tire.warehouse_location %}
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <strong>Location:</strong>
+                        <span>{{ tire.warehouse_location }}</span>
+                    </div>
+                    {% endif %}
                 </div>
                 
                 <div class="detail-row">

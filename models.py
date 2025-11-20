@@ -55,6 +55,7 @@ class Tire(db.Model):
     # Inventory
     quantity_in_stock = db.Column(db.Integer, default=0)
     reorder_level = db.Column(db.Integer, default=10)
+    warehouse_location = db.Column(db.String(100))
     
     # Additional details
     description = db.Column(db.Text)
