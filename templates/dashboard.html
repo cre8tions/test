@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - TireTrack Pro{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1><i class="fas fa-dashboard"></i> Dashboard</h1>
+        <p>Welcome back, {{ current_user.username }}! Here's an overview of your inventory.</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-boxes"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ tires|length }}</h3>
+                <p>Total Tire Types</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i class="fas fa-warehouse"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ tires|sum(attribute='quantity_in_stock') }}</h3>
+                <p>Total Units in Stock</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ low_stock_tires|length }}</h3>
+                <p>Low Stock Alerts</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon purple">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-content">
+                <h3>${{ "%.2f"|format(tires|sum(attribute='wholesale_price') * tires|sum(attribute='quantity_in_stock') / (tires|length or 1)) }}</h3>
+                <p>Avg. Inventory Value</p>
+            </div>
+        </div>
+    </div>
+    
+    {% if low_stock_tires %}
+    <div class="alerts-section">
+        <h2><i class="fas fa-bell"></i> Low Stock Alerts</h2>
+        <div class="alert-list">
+            {% for tire in low_stock_tires %}
+            <div class="alert-item {% if tire.quantity_in_stock == 0 %}out-of-stock{% endif %}">
+                <div class="alert-info">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>{{ tire.brand }} {{ tire.model }}</strong> ({{ tire.size }})
+                </div>
+                <div class="alert-details">
+                    <span class="stock-badge {% if tire.quantity_in_stock == 0 %}zero{% endif %}">
+                        {{ tire.quantity_in_stock }} units
+                    </span>
+                    <span class="reorder-level">Reorder at: {{ tire.reorder_level }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="recent-inventory">
+        <div class="section-header">
+            <h2><i class="fas fa-list"></i> Recent Inventory</h2>
+            <a href="{{ url_for('inventory') }}" class="btn btn-secondary">
+                <i class="fas fa-eye"></i> View All
+            </a>
+        </div>
+        
+        <div class="inventory-table-container">
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Brand</th>
+                        <th>Model</th>
+                        <th>Size</th>
+                        <th>Type</th>
+                        <th>Stock</th>
+                        {% if current_user.role in ['admin', 'accounting'] %}
+                        <th>Wholesale</th>
+                        {% endif %}
+                        <th>Retail</th>
+                        <th>Supplier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tire in tires[:5] %}
+                    <tr>
+                        <td><strong>{{ tire.brand }}</strong></td>
+                        <td>{{ tire.model }}</td>
+                        <td>{{ tire.size }}</td>
+                        <td><span class="type-badge {{ tire.type|lower|replace(' ', '-') }}">{{ tire.type }}</span></td>
+                        <td>
+                            <span class="stock-indicator {% if tire.quantity_in_stock <= tire.reorder_level %}low{% endif %}">
+                                {{ tire.quantity_in_stock }}
+                            </span>
+                        </td>
+                        {% if current_user.role in ['admin', 'accounting'] %}
+                        <td>${{ "%.2f"|format(tire.wholesale_price) }}</td>
+                        {% endif %}
+                        <td>${{ "%.2f"|format(tire.retail_price) }}</td>
+                        <td>{{ tire.supplier }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

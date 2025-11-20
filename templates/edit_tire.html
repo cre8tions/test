@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Tire - TireTrack Pro{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1><i class="fas fa-edit"></i> Edit Tire</h1>
+        <p>Update the tire information below.</p>
+    </div>
+    
+    <form method="POST" action="{{ url_for('edit_tire', tire_id=tire.id) }}" class="tire-form">
+        <div class="form-section">
+            <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="brand">Brand *</label>
+                    <input type="text" id="brand" name="brand" required class="form-control" 
+                           value="{{ tire.brand }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="model">Model *</label>
+                    <input type="text" id="model" name="model" required class="form-control"
+                           value="{{ tire.model }}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="size">Size *</label>
+                    <input type="text" id="size" name="size" required class="form-control"
+                           value="{{ tire.size }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="type">Type *</label>
+                    <select id="type" name="type" required class="form-control">
+                        <option value="All-Season" {% if tire.type == 'All-Season' %}selected{% endif %}>All-Season</option>
+                        <option value="Summer" {% if tire.type == 'Summer' %}selected{% endif %}>Summer</option>
+                        <option value="Winter" {% if tire.type == 'Winter' %}selected{% endif %}>Winter</option>
+                        <option value="Performance" {% if tire.type == 'Performance' %}selected{% endif %}>Performance</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3><i class="fas fa-dollar-sign"></i> Pricing</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="wholesale_price">Wholesale Price * ($)</label>
+                    <input type="number" id="wholesale_price" name="wholesale_price" required 
+                           class="form-control" step="0.01" min="0" value="{{ tire.wholesale_price }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="retail_price">Retail Price * ($)</label>
+                    <input type="number" id="retail_price" name="retail_price" required 
+                           class="form-control" step="0.01" min="0" value="{{ tire.retail_price }}">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3><i class="fas fa-truck"></i> Supplier Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="supplier">Supplier Name *</label>
+                    <input type="text" id="supplier" name="supplier" required class="form-control"
+                           value="{{ tire.supplier }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="supplier_contact">Supplier Contact</label>
+                    <input type="text" id="supplier_contact" name="supplier_contact" class="form-control"
+                           value="{{ tire.supplier_contact or '' }}">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="supplier_part_number">Supplier Part Number</label>
+                <input type="text" id="supplier_part_number" name="supplier_part_number" 
+                       class="form-control" value="{{ tire.supplier_part_number or '' }}">
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3><i class="fas fa-warehouse"></i> Inventory</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="quantity_in_stock">Quantity in Stock *</label>
+                    <input type="number" id="quantity_in_stock" name="quantity_in_stock" 
+                           class="form-control" min="0" value="{{ tire.quantity_in_stock }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reorder_level">Reorder Level *</label>
+                    <input type="number" id="reorder_level" name="reorder_level" 
+                           class="form-control" min="0" value="{{ tire.reorder_level }}" required>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3><i class="fas fa-cogs"></i> Technical Specifications</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="speed_rating">Speed Rating</label>
+                    <input type="text" id="speed_rating" name="speed_rating" class="form-control"
+                           value="{{ tire.speed_rating or '' }}" maxlength="10">
+                </div>
+                
+                <div class="form-group">
+                    <label for="load_index">Load Index</label>
+                    <input type="text" id="load_index" name="load_index" class="form-control"
+                           value="{{ tire.load_index or '' }}" maxlength="10">
+                </div>
+                
+                <div class="form-group">
+                    <label for="warranty_months">Warranty (months)</label>
+                    <input type="number" id="warranty_months" name="warranty_months" 
+                           class="form-control" min="0" value="{{ tire.warranty_months or '' }}">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3><i class="fas fa-align-left"></i> Description</h3>
+            <div class="form-group">
+                <label for="description">Product Description</label>
+                <textarea id="description" name="description" class="form-control" rows="4">{{ tire.description or '' }}</textarea>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{{ url_for('inventory') }}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Update Tire
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
