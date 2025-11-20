@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Add Tire - TireTrack Pro{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1><i class="fas fa-plus-circle"></i> Add New Tire</h1>
+        <p>Enter the tire information below to add it to your inventory.</p>
+    </div>
+    
+    <form method="POST" action="{{ url_for('add_tire') }}" class="tire-form">
+        <div class="form-section">
+            <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="brand">Brand *</label>
+                    <input type="text" id="brand" name="brand" required class="form-control" 
+                           placeholder="e.g., Michelin, Bridgestone">
+                </div>
+                
+                <div class="form-group">
+                    <label for="model">Model *</label>
+                    <input type="text" id="model" name="model" required class="form-control"
+                           placeholder="e.g., Pilot Sport 4S">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="size">Size *</label>
+                    <input type="text" id="size" name="size" required class="form-control"
+                           placeholder="e.g., 245/40R18">
+                </div>
+                
+                <div class="form-group">
+                    <label for="type">Type *</label>
+                    <select id="type" name="type" required class="form-control">
+                        <option value="">Select Type</option>
+                        <option value="All-Season">All-Season</option>
+                        <option value="Summer">Summer</option>
+                        <option value="Winter">Winter</option>
+                        <option value="Performance">Performance</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3><i class="fas fa-dollar-sign"></i> Pricing</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="wholesale_price">Wholesale Price * ($)</label>
+                    <input type="number" id="wholesale_price" name="wholesale_price" required 
+                           class="form-control" step="0.01" min="0" placeholder="0.00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="retail_price">Retail Price * ($)</label>
+                    <input type="number" id="retail_price" name="retail_price" required 
+                           class="form-control" step="0.01" min="0" placeholder="0.00">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3><i class="fas fa-truck"></i> Supplier Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="supplier">Supplier Name *</label>
+                    <input type="text" id="supplier" name="supplier" required class="form-control"
+                           placeholder="e.g., Michelin Distribution">
+                </div>
+                
+                <div class="form-group">
+                    <label for="supplier_contact">Supplier Contact</label>
+                    <input type="text" id="supplier_contact" name="supplier_contact" class="form-control"
+                           placeholder="Phone or email">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="supplier_part_number">Supplier Part Number</label>
+                <input type="text" id="supplier_part_number" name="supplier_part_number" 
+                       class="form-control" placeholder="Supplier's product code">
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3><i class="fas fa-warehouse"></i> Inventory</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="quantity_in_stock">Quantity in Stock *</label>
+                    <input type="number" id="quantity_in_stock" name="quantity_in_stock" 
+                           class="form-control" min="0" value="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reorder_level">Reorder Level *</label>
+                    <input type="number" id="reorder_level" name="reorder_level" 
+                           class="form-control" min="0" value="10" required>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3><i class="fas fa-cogs"></i> Technical Specifications</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="speed_rating">Speed Rating</label>
+                    <input type="text" id="speed_rating" name="speed_rating" class="form-control"
+                           placeholder="e.g., H, V, Y" maxlength="10">
+                </div>
+                
+                <div class="form-group">
+                    <label for="load_index">Load Index</label>
+                    <input type="text" id="load_index" name="load_index" class="form-control"
+                           placeholder="e.g., 94, 97" maxlength="10">
+                </div>
+                
+                <div class="form-group">
+                    <label for="warranty_months">Warranty (months)</label>
+                    <input type="number" id="warranty_months" name="warranty_months" 
+                           class="form-control" min="0" placeholder="e.g., 36">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3><i class="fas fa-align-left"></i> Description</h3>
+            <div class="form-group">
+                <label for="description">Product Description</label>
+                <textarea id="description" name="description" class="form-control" rows="4"
+                          placeholder="Enter a detailed description of the tire..."></textarea>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{{ url_for('inventory') }}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Add Tire
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
