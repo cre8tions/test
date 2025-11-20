@@ -62,13 +62,23 @@ pip install -r requirements.txt
 
 ## Running the Application
 
-Start the Flask development server:
+### Development Mode
+
+For development with debug mode enabled, create a `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+Then start the Flask development server:
 
 ```bash
 python app.py
 ```
 
 The application will be available at `http://localhost:5000`
+
+**Note:** Debug mode is disabled by default for security. Set `FLASK_DEBUG=true` in your `.env` file to enable it during development.
 
 ## API Endpoints
 
