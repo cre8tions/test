@@ -19,6 +19,7 @@
                     {% if current_user.is_authenticated %}
                         <li><a href="{{ url_for('dashboard') }}" {% if request.endpoint == 'dashboard' %}class="active"{% endif %}><i class="fas fa-dashboard"></i> Dashboard</a></li>
                         <li><a href="{{ url_for('inventory') }}" {% if request.endpoint == 'inventory' %}class="active"{% endif %}><i class="fas fa-boxes"></i> Inventory</a></li>
+                        <li><a href="{{ url_for('customer_order') }}" {% if request.endpoint == 'customer_order' %}class="active"{% endif %}><i class="fas fa-shopping-cart"></i> Order Tires</a></li>
                         {% if current_user.role in ['admin', 'sales'] %}
                         <li><a href="{{ url_for('add_tire') }}" {% if request.endpoint == 'add_tire' %}class="active"{% endif %}><i class="fas fa-plus-circle"></i> Add Tire</a></li>
                         {% endif %}
@@ -30,6 +31,7 @@
                         </li>
                     {% else %}
                         <li><a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="{{ url_for('customer_order') }}" {% if request.endpoint == 'customer_order' %}class="active"{% endif %}><i class="fas fa-shopping-cart"></i> Order Tires</a></li>
                         <li><a href="{{ url_for('login') }}" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login</a></li>
                     {% endif %}
                 </ul>
