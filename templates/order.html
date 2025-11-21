@@ -282,6 +282,28 @@
     color: #94a3b8;
     cursor: not-allowed;
 }
+
+.order-button.special-order {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    cursor: pointer;
+}
+
+.order-button.special-order:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.special-order-badge {
+    display: inline-block;
+    background: var(--warning-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
 </style>
 
 <script>
@@ -460,11 +482,67 @@ document.addEventListener('DOMContentLoaded', function() {
         const card = document.createElement('div');
         card.className = `tire-card ${tire.in_stock ? '' : 'out-of-stock'}`;
         
+        // Escape HTML to prevent XSS
+        const escapeHtml = (text) => {
+            if (text == null) return '';
+            const div = document.createElement('div');
+            div.textContent = String(text);
+            return div.innerHTML;
+        };
+        
+        const escapeJs = (text) => {
+            if (!text) return '';
+            return text.replace(/\\/g, '\\\\')
+                      .replace(/'/g, "\\'")
+                      .replace(/"/g, '\\"')
+                      .replace(/`/g, '\\`')
+                      .replace(/\$/g, '\\$')
+                      .replace(/\n/g, '\\n')
+                      .replace(/\r/g, '\\r')
+                      .replace(/\t/g, '\\t')
+                      .replace(/</g, '\\u003C')
+                      .replace(/>/g, '\\u003E');
+        };
+        
+        const escapedBrand = escapeHtml(tire.brand);
+        const escapedModel = escapeHtml(tire.model);
+        const escapedSize = escapeHtml(tire.size);
+        const escapedType = escapeHtml(tire.type);
+        const escapedSpeedRating = escapeHtml(tire.speed_rating);
+        const escapedLoadIndex = escapeHtml(tire.load_index);
+        const escapedDescription = escapeHtml(tire.description);
+        
+        const jsBrand = escapeJs(tire.brand);
+        const jsModel = escapeJs(tire.model);
+        
+        // Determine button properties
+        let buttonClass, buttonIcon, buttonText, buttonDisabled, buttonOnClick;
+        
+        if (tire.in_stock) {
+            buttonClass = 'available';
+            buttonIcon = 'shopping-cart';
+            buttonText = 'Add to Order';
+            buttonDisabled = '';
+            buttonOnClick = `alert('Order placed for ${jsBrand} ${jsModel}!\\n\\nThis is a demo. In production, this would process the order.')`;
+        } else if (tire.special_order_available) {
+            buttonClass = 'special-order';
+            buttonIcon = 'clock';
+            buttonText = 'Special Order';
+            buttonDisabled = '';
+            buttonOnClick = `alert('Special order request submitted for ${jsBrand} ${jsModel}!\\n\\nThis is a demo. In production, this would process the special order with estimated delivery time.')`;
+        } else {
+            buttonClass = 'unavailable';
+            buttonIcon = 'ban';
+            buttonText = 'Out of Stock';
+            buttonDisabled = 'disabled';
+            buttonOnClick = '';
+        }
+        
         card.innerHTML = `
             <div class="tire-header">
                 <div>
-                    <div class="tire-brand">${tire.brand}</div>
-                    <div class="tire-model">${tire.model}</div>
+                    <div class="tire-brand">${escapedBrand}</div>
+                    <div class="tire-model">${escapedModel}</div>
                 </div>
                 <span class="stock-badge ${tire.in_stock ? 'in-stock' : 'out-of-stock'}">
                     ${tire.in_stock ? `${tire.quantity_in_stock} In Stock` : 'Out of Stock'}
@@ -474,22 +552,22 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="tire-details">
                 <div class="detail-row">
                     <span class="detail-label">Size:</span>
-                    <span class="detail-value">${tire.size}</span>
+                    <span class="detail-value">${escapedSize}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Type:</span>
-                    <span class="detail-value">${tire.type}</span>
+                    <span class="detail-value">${escapedType}</span>
                 </div>
                 ${tire.speed_rating ? `
                 <div class="detail-row">
                     <span class="detail-label">Speed Rating:</span>
-                    <span class="detail-value">${tire.speed_rating}</span>
+                    <span class="detail-value">${escapedSpeedRating}</span>
                 </div>
                 ` : ''}
                 ${tire.load_index ? `
                 <div class="detail-row">
                     <span class="detail-label">Load Index:</span>
-                    <span class="detail-value">${tire.load_index}</span>
+                    <span class="detail-value">${escapedLoadIndex}</span>
                 </div>
                 ` : ''}
                 ${tire.warranty_months ? `
@@ -502,21 +580,22 @@ document.addEventListener('DOMContentLoaded', function() {
             
             ${tire.description ? `
             <div class="tire-description">
-                ${tire.description}
+                ${escapedDescription}
             </div>
             ` : ''}
             
             <div class="tire-price">
                 $${tire.retail_price.toFixed(2)}
+                ${!tire.in_stock && tire.special_order_available ? '<span class="special-order-badge"><i class="fas fa-clock"></i> Special Order Available</span>' : ''}
             </div>
             
             <button 
-                class="order-button ${tire.in_stock ? 'available' : 'unavailable'}"
-                ${tire.in_stock ? '' : 'disabled'}
-                onclick="${tire.in_stock ? `alert('Order placed for ${tire.brand} ${tire.model}!\\n\\nThis is a demo. In production, this would process the order.')` : ''}"
+                class="order-button ${buttonClass}"
+                ${buttonDisabled}
+                onclick="${buttonOnClick}"
             >
-                <i class="fas fa-${tire.in_stock ? 'shopping-cart' : 'ban'}"></i>
-                ${tire.in_stock ? 'Add to Order' : 'Out of Stock'}
+                <i class="fas fa-${buttonIcon}"></i>
+                ${buttonText}
             </button>
         `;
         

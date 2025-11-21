@@ -56,6 +56,7 @@ class Tire(db.Model):
     quantity_in_stock = db.Column(db.Integer, default=0)
     reorder_level = db.Column(db.Integer, default=10)
     warehouse_location = db.Column(db.String(100))
+    special_order_available = db.Column(db.Boolean, default=False)
     
     # Additional details
     description = db.Column(db.Text)

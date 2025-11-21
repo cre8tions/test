@@ -117,6 +117,7 @@ def add_tire():
             warranty_months=request.form.get('warranty_months'),
             speed_rating=request.form.get('speed_rating'),
             load_index=request.form.get('load_index'),
+            special_order_available='special_order_available' in request.form,
             created_by=current_user.id
         )
         db.session.add(tire)
@@ -151,6 +152,7 @@ def edit_tire(tire_id):
         tire.warranty_months = request.form.get('warranty_months')
         tire.speed_rating = request.form.get('speed_rating')
         tire.load_index = request.form.get('load_index')
+        tire.special_order_available = 'special_order_available' in request.form
         
         db.session.commit()
         flash('Tire updated successfully!', 'success')
@@ -228,7 +230,8 @@ def get_tires_by_size(size):
         'description': tire.description,
         'warranty_months': tire.warranty_months,
         'speed_rating': tire.speed_rating,
-        'load_index': tire.load_index
+        'load_index': tire.load_index,
+        'special_order_available': tire.special_order_available
     } for tire in tires])
 
 
@@ -470,6 +473,7 @@ def init_db():
                     warranty_months=45,
                     speed_rating='Y',
                     load_index='95',
+                    special_order_available=True,
                     created_by=1
                 ),
                 Tire(
