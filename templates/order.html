@@ -490,6 +490,16 @@ document.addEventListener('DOMContentLoaded', function() {
             return div.innerHTML;
         };
         
+        const escapeJs = (text) => {
+            if (!text) return '';
+            return text.replace(/\\/g, '\\\\')
+                      .replace(/'/g, "\\'")
+                      .replace(/"/g, '\\"')
+                      .replace(/\n/g, '\\n')
+                      .replace(/\r/g, '\\r')
+                      .replace(/\t/g, '\\t');
+        };
+        
         const escapedBrand = escapeHtml(tire.brand);
         const escapedModel = escapeHtml(tire.model);
         const escapedSize = escapeHtml(tire.size);
@@ -497,6 +507,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const escapedSpeedRating = escapeHtml(tire.speed_rating);
         const escapedLoadIndex = escapeHtml(tire.load_index);
         const escapedDescription = escapeHtml(tire.description);
+        
+        const jsBrand = escapeJs(tire.brand);
+        const jsModel = escapeJs(tire.model);
         
         // Determine button properties
         let buttonClass, buttonIcon, buttonText, buttonDisabled, buttonOnClick;
@@ -506,13 +519,13 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonIcon = 'shopping-cart';
             buttonText = 'Add to Order';
             buttonDisabled = '';
-            buttonOnClick = `alert('Order placed for ${escapedBrand} ${escapedModel}!\\n\\nThis is a demo. In production, this would process the order.')`;
+            buttonOnClick = `alert('Order placed for ${jsBrand} ${jsModel}!\\n\\nThis is a demo. In production, this would process the order.')`;
         } else if (tire.special_order_available) {
             buttonClass = 'special-order';
             buttonIcon = 'clock';
             buttonText = 'Special Order';
             buttonDisabled = '';
-            buttonOnClick = `alert('Special order request submitted for ${escapedBrand} ${escapedModel}!\\n\\nThis is a demo. In production, this would process the special order with estimated delivery time.')`;
+            buttonOnClick = `alert('Special order request submitted for ${jsBrand} ${jsModel}!\\n\\nThis is a demo. In production, this would process the special order with estimated delivery time.')`;
         } else {
             buttonClass = 'unavailable';
             buttonIcon = 'ban';
