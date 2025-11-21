@@ -107,6 +107,18 @@
                        class="form-control" value="{{ tire.warehouse_location or '' }}" 
                        placeholder="e.g., Warehouse A - Aisle 3 - Shelf B">
             </div>
+            
+            <div class="form-group">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="special_order_available" name="special_order_available" 
+                           style="margin-right: 0.5rem; width: 18px; height: 18px; cursor: pointer;"
+                           {% if tire.special_order_available %}checked{% endif %}>
+                    <span style="font-weight: 500;">Available for Special Order</span>
+                </label>
+                <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem; margin-left: 1.6rem;">
+                    Check this if customers can special order this tire when out of stock
+                </small>
+            </div>
         </div>
         
         <div class="form-section">

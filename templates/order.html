@@ -282,6 +282,28 @@
     color: #94a3b8;
     cursor: not-allowed;
 }
+
+.order-button.special-order {
+    background: var(--gradient-warning);
+    color: white;
+    cursor: pointer;
+}
+
+.order-button.special-order:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.special-order-badge {
+    display: inline-block;
+    background: var(--warning-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
 </style>
 
 <script>
@@ -460,6 +482,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const card = document.createElement('div');
         card.className = `tire-card ${tire.in_stock ? '' : 'out-of-stock'}`;
         
+        // Determine button properties
+        let buttonClass, buttonIcon, buttonText, buttonDisabled, buttonOnClick;
+        
+        if (tire.in_stock) {
+            buttonClass = 'available';
+            buttonIcon = 'shopping-cart';
+            buttonText = 'Add to Order';
+            buttonDisabled = '';
+            buttonOnClick = `alert('Order placed for ${tire.brand} ${tire.model}!\\n\\nThis is a demo. In production, this would process the order.')`;
+        } else if (tire.special_order_available) {
+            buttonClass = 'special-order';
+            buttonIcon = 'clock';
+            buttonText = 'Special Order';
+            buttonDisabled = '';
+            buttonOnClick = `alert('Special order request submitted for ${tire.brand} ${tire.model}!\\n\\nThis is a demo. In production, this would process the special order with estimated delivery time.')`;
+        } else {
+            buttonClass = 'unavailable';
+            buttonIcon = 'ban';
+            buttonText = 'Out of Stock';
+            buttonDisabled = 'disabled';
+            buttonOnClick = '';
+        }
+        
         card.innerHTML = `
             <div class="tire-header">
                 <div>
@@ -508,15 +553,16 @@ document.addEventListener('DOMContentLoaded', function() {
             
             <div class="tire-price">
                 $${tire.retail_price.toFixed(2)}
+                ${!tire.in_stock && tire.special_order_available ? '<span class="special-order-badge"><i class="fas fa-clock"></i> Special Order Available</span>' : ''}
             </div>
             
             <button 
-                class="order-button ${tire.in_stock ? 'available' : 'unavailable'}"
-                ${tire.in_stock ? '' : 'disabled'}
-                onclick="${tire.in_stock ? `alert('Order placed for ${tire.brand} ${tire.model}!\\n\\nThis is a demo. In production, this would process the order.')` : ''}"
+                class="order-button ${buttonClass}"
+                ${buttonDisabled}
+                onclick="${buttonOnClick}"
             >
-                <i class="fas fa-${tire.in_stock ? 'shopping-cart' : 'ban'}"></i>
-                ${tire.in_stock ? 'Add to Order' : 'Out of Stock'}
+                <i class="fas fa-${buttonIcon}"></i>
+                ${buttonText}
             </button>
         `;
         
