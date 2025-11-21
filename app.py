@@ -7,8 +7,6 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, f
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Tire, VehicleTireSize, ServiceItem, Appointment, AppointmentItem
 from functools import wraps
-from sqlalchemy import and_, or_
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tire_store.db'
