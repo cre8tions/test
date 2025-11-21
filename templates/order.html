@@ -756,11 +756,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     checkoutBtn.addEventListener('click', () => {
+        // Validate cart items and total
+        if (!Array.isArray(cart) || cart.length === 0) {
+            alert("Your cart is empty. Please add items before checking out.");
+            return;
+        }
+        const invalidItem = cart.find(item =>
+            !item ||
+            typeof item.name !== 'string' || item.name.trim() === '' ||
+            typeof item.quantity !== 'number' || item.quantity <= 0 ||
+            typeof item.price !== 'number' || item.price <= 0
+        );
+        if (invalidItem) {
+            alert("Your cart contains invalid items. Please review your cart before checking out.");
+            return;
+        }
         const itemsList = cart.map(item => 
             `${item.name} (Qty: ${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`
         ).join('\n');
         const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        
+        if (total <= 0) {
+            alert("Order total must be greater than zero.");
+            return;
+        }
         alert(`Order Summary:\n\n${itemsList}\n\nTotal: $${total.toFixed(2)}\n\nThis is a demo. In production, this would process your order.`);
     });
 
