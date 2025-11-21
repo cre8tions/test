@@ -14,118 +14,41 @@
         </p>
     </div>
 
+    <!-- Shopping Cart Summary -->
+    <div id="cart-summary" style="display: none; position: fixed; top: 80px; right: 20px; background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-xl); max-width: 350px; z-index: 1000; border: 2px solid var(--primary-color);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 0;">
+                <i class="fas fa-shopping-cart"></i> Your Order
+            </h3>
+            <button id="close-cart" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--text-secondary);" aria-label="Close cart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="cart-items" style="margin-bottom: 1rem; max-height: 300px; overflow-y: auto;"></div>
+        <div style="border-top: 2px solid var(--border-color); padding-top: 1rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">
+                <span>Total:</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button id="checkout-btn" style="width: 100%; background: var(--gradient-primary); color: white; padding: 0.875rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                <i class="fas fa-check"></i> Checkout
+            </button>
+        </div>
+    </div>
+
     <!-- Service Items Section -->
     <div style="margin-bottom: 3rem;">
-        <h2 style="font-size: 1.75rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1.5rem;">
-            <i class="fas fa-tools" style="color: var(--primary-color);"></i>
-            Available Services
-        </h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
-            <!-- Tire Rotation -->
-            <div class="service-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer;" 
-                 onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-xl)'; this.style.borderColor='var(--primary-color)';" 
-                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='transparent';"
-                 onclick="alert('Tire Rotation service selected!\nPrice: $49.99\n\nThis is a demo. In production, this would add the service to your order.')" 
-                 tabindex="0" role="button"
-                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); alert('Tire Rotation service selected!\\nPrice: $49.99\\n\\nThis is a demo. In production, this would add the service to your order.');}">
-                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                    <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                        <i class="fas fa-sync-alt" style="color: white; font-size: 1.5rem;"></i>
-                    </div>
-                    <div>
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 0;">Tire Rotation</h3>
-                        <data value="49.99" style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin: 0;">$49.99</data>
-                    </div>
-                </div>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
-                    Regular tire rotation extends tire life and ensures even wear patterns for optimal performance.
-                </p>
-            </div>
-
-            <!-- New Tires -->
-            <div class="service-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer;" 
-                 onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-xl)';" 
-                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)';"
-                 onclick="document.getElementById('tire-search-section').scrollIntoView({ behavior: 'smooth' });"
-                 tabindex="0" role="button"
-                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('tire-search-section').scrollIntoView({ behavior: 'smooth' });}">
-                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                    <div style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                        <i class="fas fa-tire" style="color: white; font-size: 1.5rem;"></i>
-                    </div>
-                    <div>
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: white; margin: 0;">New Tires</h3>
-                        <p style="font-size: 1rem; font-weight: 600; color: rgba(255, 255, 255, 0.9); margin: 0;">Search Below</p>
-                    </div>
-                </div>
-                <p style="color: rgba(255, 255, 255, 0.95); font-size: 0.9rem; line-height: 1.5;">
-                    Browse our extensive tire inventory. Click to search by size or vehicle make/model.
-                </p>
-                <div style="margin-top: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.15); border-radius: 6px; text-align: center;">
-                    <span style="color: white; font-weight: 600; font-size: 0.85rem;">
-                        <i class="fas fa-arrow-down"></i> Click to Browse Tires
-                    </span>
-                </div>
-            </div>
-
-            <!-- Alignment -->
-            <div class="service-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer;" 
-                 onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-xl)'; this.style.borderColor='var(--primary-color)';" 
-                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='transparent';"
-                 onclick="alert('Alignment service selected!\nPrice: $89.99\n\nThis is a demo. In production, this would add the service to your order.')">
-                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                    <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                        <i class="fas fa-sliders-h" style="color: white; font-size: 1.5rem;"></i>
-                    </div>
-                    <div>
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 0;">Alignment</h3>
-                        <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin: 0;">$89.99</p>
-                    </div>
-                </div>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
-                    Precise wheel alignment improves handling, extends tire life, and enhances fuel efficiency.
-                </p>
-            </div>
-
-            <!-- Inspection -->
-            <div class="service-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer;" 
-                 onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-xl)'; this.style.borderColor='var(--primary-color)';" 
-                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='transparent';"
-                 onclick="alert('Inspection service selected!\nPrice: $29.99\n\nThis is a demo. In production, this would add the service to your order.')" 
-                 tabindex="0" role="button"
-                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); alert('Inspection service selected!\\nPrice: $29.99\\n\\nThis is a demo. In production, this would add the service to your order.');}">
-                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                    <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                        <i class="fas fa-clipboard-check" style="color: white; font-size: 1.5rem;"></i>
-                    </div>
-                    <div>
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 0;">Inspection</h3>
-                        <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin: 0;">$29.99</p>
-                    </div>
-                </div>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
-                    Comprehensive vehicle inspection to ensure safety and identify potential issues early.
-                </p>
-            </div>
-
-            <!-- Emissions -->
-            <div class="service-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer;" 
-                 onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-xl)'; this.style.borderColor='var(--primary-color)';" 
-                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='transparent';"
-                 onclick="alert('Emissions test selected!\nPrice: $39.99\n\nThis is a demo. In production, this would add the service to your order.')">
-                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                    <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                        <i class="fas fa-smog" style="color: white; font-size: 1.5rem;"></i>
-                    </div>
-                    <div>
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 0;">Emissions</h3>
-                        <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin: 0;">$39.99</p>
-                    </div>
-                </div>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
-                    State-required emissions testing to ensure your vehicle meets environmental standards.
-                </p>
-            </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.75rem; font-weight: 600; color: var(--text-primary); margin: 0;">
+                <i class="fas fa-tools" style="color: var(--primary-color);"></i>
+                Available Services
+            </h2>
+            <button id="view-cart-btn" style="display: none; background: var(--gradient-primary); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                <i class="fas fa-shopping-cart"></i> View Order (<span id="cart-count">0</span>)
+            </button>
+        </div>
+        <div id="services-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <!-- Service cards will be generated by JavaScript -->
         </div>
     </div>
 
@@ -427,10 +350,114 @@
     font-weight: 600;
     margin-left: 0.5rem;
 }
+
+/* Service Card Styles */
+.service-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.service-card:hover,
+.service-card:focus {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.service-card.new-tires {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.service-card.new-tires:hover,
+.service-card.new-tires:focus {
+    border-color: transparent;
+}
+
+.service-card.in-cart {
+    border-color: var(--success-color);
+    background: #f0fdf4;
+}
+
+/* Cart Item Styles */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--light-bg);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.cart-item-remove {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Service definitions
+    const services = [
+        {
+            id: 'tire-rotation',
+            name: 'Tire Rotation',
+            price: 49.99,
+            icon: 'sync-alt',
+            description: 'Regular tire rotation extends tire life and ensures even wear patterns for optimal performance.',
+            type: 'regular'
+        },
+        {
+            id: 'new-tires',
+            name: 'New Tires',
+            price: 0,
+            icon: 'tire',
+            description: 'Browse our extensive tire inventory. Click to search by size or vehicle make/model.',
+            type: 'special',
+            action: 'scroll'
+        },
+        {
+            id: 'alignment',
+            name: 'Alignment',
+            price: 89.99,
+            icon: 'sliders-h',
+            description: 'Precise wheel alignment improves handling, extends tire life, and enhances fuel efficiency.',
+            type: 'regular'
+        },
+        {
+            id: 'inspection',
+            name: 'Inspection',
+            price: 29.99,
+            icon: 'clipboard-check',
+            description: 'Comprehensive vehicle inspection to ensure safety and identify potential issues early.',
+            type: 'regular'
+        },
+        {
+            id: 'emissions',
+            name: 'Emissions',
+            price: 39.99,
+            icon: 'smog',
+            description: 'State-required emissions testing to ensure your vehicle meets environmental standards.',
+            type: 'regular'
+        }
+    ];
+
+    // Shopping cart
+    const cart = [];
+    
     // Elements
     const sizeSearchForm = document.getElementById('size-search-form');
     const vehicleSearchForm = document.getElementById('vehicle-search-form');
@@ -444,6 +471,207 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedSizeDisplay = document.getElementById('selected-size-display');
     const selectedSizeText = document.getElementById('selected-size-text');
     const resultsCount = document.getElementById('results-count');
+    const servicesGrid = document.getElementById('services-grid');
+    const cartSummary = document.getElementById('cart-summary');
+    const viewCartBtn = document.getElementById('view-cart-btn');
+    const closeCartBtn = document.getElementById('close-cart');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const cartItems = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+    const cartCount = document.getElementById('cart-count');
+
+    // Generate service cards
+    function generateServiceCards() {
+        servicesGrid.innerHTML = '';
+        services.forEach(service => {
+            const card = document.createElement('div');
+            card.className = 'service-card' + (service.type === 'special' ? ' new-tires' : '');
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('data-service-id', service.id);
+            card.setAttribute('aria-label', `${service.name} - ${service.price > 0 ? '$' + service.price.toFixed(2) : 'Search Below'}`);
+            
+            const isSpecial = service.type === 'special';
+            const textColor = isSpecial ? 'white' : 'var(--text-primary)';
+            const priceColor = isSpecial ? 'rgba(255, 255, 255, 0.9)' : 'var(--primary-color)';
+            const descColor = isSpecial ? 'rgba(255, 255, 255, 0.95)' : 'var(--text-secondary)';
+            const iconBg = isSpecial ? 'rgba(255, 255, 255, 0.2)' : 'var(--gradient-primary)';
+            
+            card.innerHTML = `
+                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                    <div style="width: 50px; height: 50px; background: ${iconBg}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                        <i class="fas fa-${service.icon}" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: ${textColor}; margin: 0;">${service.name}</h3>
+                        <data value="${service.price}" style="font-size: ${isSpecial ? '1rem' : '1.5rem'}; font-weight: ${isSpecial ? '600' : '700'}; color: ${priceColor}; margin: 0; display: block;">
+                            ${service.price > 0 ? '$' + service.price.toFixed(2) : 'Search Below'}
+                        </data>
+                    </div>
+                </div>
+                <p style="color: ${descColor}; font-size: 0.9rem; line-height: 1.5;">
+                    ${service.description}
+                </p>
+                ${isSpecial ? `
+                <div style="margin-top: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.15); border-radius: 6px; text-align: center;">
+                    <span style="color: white; font-weight: 600; font-size: 0.85rem;">
+                        <i class="fas fa-arrow-down"></i> Click to Browse Tires
+                    </span>
+                </div>
+                ` : ''}
+            `;
+            
+            // Add click handler
+            const handleClick = () => {
+                if (service.action === 'scroll') {
+                    document.getElementById('tire-search-section').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    addToCart(service);
+                }
+            };
+            
+            card.addEventListener('click', handleClick);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleClick();
+                }
+            });
+            
+            servicesGrid.appendChild(card);
+        });
+    }
+
+    // Add item to cart
+    function addToCart(service) {
+        const existing = cart.find(item => item.id === service.id);
+        if (existing) {
+            existing.quantity++;
+        } else {
+            cart.push({
+                id: service.id,
+                name: service.name,
+                price: service.price,
+                quantity: 1
+            });
+        }
+        updateCart();
+        showCartNotification(service.name);
+    }
+
+    // Remove item from cart
+    function removeFromCart(serviceId) {
+        const index = cart.findIndex(item => item.id === serviceId);
+        if (index !== -1) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+    }
+
+    // Update cart display
+    function updateCart() {
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        
+        cartTotal.textContent = '$' + total.toFixed(2);
+        cartCount.textContent = count;
+        
+        if (count > 0) {
+            viewCartBtn.style.display = 'inline-block';
+        } else {
+            viewCartBtn.style.display = 'none';
+            cartSummary.style.display = 'none';
+        }
+        
+        cartItems.innerHTML = '';
+        cart.forEach(item => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'cart-item';
+            itemEl.innerHTML = `
+                <div>
+                    <div style="font-weight: 600;">${item.name}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                        Qty: ${item.quantity} × $${item.price.toFixed(2)}
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-weight: 700; color: var(--primary-color);">$${(item.price * item.quantity).toFixed(2)}</span>
+                    <button class="cart-item-remove" data-service-id="${item.id}" aria-label="Remove ${item.name}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            cartItems.appendChild(itemEl);
+        });
+        
+        // Update service cards to show in-cart state
+        document.querySelectorAll('.service-card').forEach(card => {
+            const serviceId = card.getAttribute('data-service-id');
+            const inCart = cart.some(item => item.id === serviceId);
+            if (inCart) {
+                card.classList.add('in-cart');
+            } else {
+                card.classList.remove('in-cart');
+            }
+        });
+    }
+
+    // Show cart notification
+    function showCartNotification(serviceName) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-xl);
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        `;
+        notification.innerHTML = `
+            <i class="fas fa-check-circle"></i> ${serviceName} added to order!
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.3s';
+            setTimeout(() => notification.remove(), 300);
+        }, 2000);
+    }
+
+    // Event listeners
+    viewCartBtn.addEventListener('click', () => {
+        cartSummary.style.display = 'block';
+    });
+
+    closeCartBtn.addEventListener('click', () => {
+        cartSummary.style.display = 'none';
+    });
+
+    checkoutBtn.addEventListener('click', () => {
+        const itemsList = cart.map(item => 
+            `${item.name} (Qty: ${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`
+        ).join('\n');
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        
+        alert(`Order Summary:\n\n${itemsList}\n\nTotal: $${total.toFixed(2)}\n\nThis is a demo. In production, this would process your order.`);
+    });
+
+    // Remove item from cart
+    cartItems.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.cart-item-remove');
+        if (removeBtn) {
+            const serviceId = removeBtn.getAttribute('data-service-id');
+            removeFromCart(serviceId);
+        }
+    });
+
+    // Initialize service cards
+    generateServiceCards();
 
     // Normalize tire size format (e.g., 235-45-18 or 235/45/18 to 235/45R18)
     function normalizeTireSize(size) {
