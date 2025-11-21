@@ -14,6 +14,11 @@
         </p>
     </div>
 
+    <!-- Success/Error Message -->
+    <div id="message-container" style="display: none; margin-bottom: 2rem; padding: 1rem; border-radius: 8px; font-weight: 500;">
+        <div id="message-content"></div>
+    </div>
+
     <div class="card" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow-md);">
         <form id="appointment-form">
             <!-- Customer Information -->
@@ -289,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
             displayServiceItems();
         } catch (error) {
             console.error('Error loading service items:', error);
-            alert('Error loading service items. Please refresh the page.');
+            showMessage('Error loading service items. Please refresh the page.', 'error');
         }
     }
     
@@ -485,19 +490,39 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (data.success) {
-                alert(`✓ Appointment scheduled successfully!\n\nAppointment ID: ${data.appointment_id}\n\nYou will receive a confirmation shortly.`);
-                window.location.reload();
+                showMessage(`✓ Appointment scheduled successfully! Appointment ID: ${data.appointment_id}. You will receive a confirmation shortly.`, 'success');
+                // Wait a moment before reloading to let user see the message
+                setTimeout(() => window.location.reload(), 2000);
             } else {
-                alert(`Error: ${data.error}`);
+                showMessage(`Error: ${escapeHtml(data.error)}`, 'error');
                 submitButton.disabled = false;
                 submitButton.innerHTML = '<i class="fas fa-calendar-plus"></i> Schedule Appointment';
             }
         } catch (error) {
             console.error('Error submitting appointment:', error);
-            alert('Error scheduling appointment. Please try again.');
+            showMessage('Error scheduling appointment. Please try again.', 'error');
             submitButton.disabled = false;
             submitButton.innerHTML = '<i class="fas fa-calendar-plus"></i> Schedule Appointment';
         }
+    }
+    
+    function showMessage(message, type) {
+        const container = document.getElementById('message-container');
+        const content = document.getElementById('message-content');
+        
+        content.innerHTML = message;
+        container.style.display = 'block';
+        
+        if (type === 'success') {
+            container.style.background = 'var(--success-color)';
+            container.style.color = 'white';
+        } else {
+            container.style.background = 'var(--danger-color)';
+            container.style.color = 'white';
+        }
+        
+        // Scroll to top to show message
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
     function getServiceIcon(name) {

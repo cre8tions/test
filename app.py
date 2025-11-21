@@ -278,7 +278,7 @@ def check_availability():
     total_duration = sum(s.duration_minutes for s in services)
     
     # Check if appointment would end within business hours
-    end_time = (datetime.combine(date.today(), appointment_time) + timedelta(minutes=total_duration)).time()
+    end_time = (datetime.combine(appointment_date, appointment_time) + timedelta(minutes=total_duration)).time()
     if not is_within_business_hours(appointment_date, end_time):
         return jsonify({'available': False, 'reason': 'Appointment would extend beyond business hours'})
     
@@ -341,7 +341,7 @@ def create_appointment():
     if not is_within_business_hours(appointment_date, appointment_time):
         return jsonify({'success': False, 'error': 'Outside business hours'}), 400
     
-    end_time = (datetime.combine(date.today(), appointment_time) + timedelta(minutes=total_duration)).time()
+    end_time = (datetime.combine(appointment_date, appointment_time) + timedelta(minutes=total_duration)).time()
     if not is_within_business_hours(appointment_date, end_time):
         return jsonify({'success': False, 'error': 'Appointment would extend beyond business hours'}), 400
     
