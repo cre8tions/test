@@ -25,7 +25,9 @@
             <div class="service-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer;" 
                  onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-xl)'; this.style.borderColor='var(--primary-color)';" 
                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='transparent';"
-                 onclick="alert('Tire Rotation service selected!\nPrice: $49.99\n\nThis is a demo. In production, this would add the service to your order.')">
+                 onclick="alert('Tire Rotation service selected!\nPrice: $49.99\n\nThis is a demo. In production, this would add the service to your order.')" 
+                 tabindex="0" role="button"
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); alert('Tire Rotation service selected!\\nPrice: $49.99\\n\\nThis is a demo. In production, this would add the service to your order.');}">
                 <div style="display: flex; align-items: center; margin-bottom: 1rem;">
                     <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
                         <i class="fas fa-sync-alt" style="color: white; font-size: 1.5rem;"></i>
