@@ -145,3 +145,45 @@ class AppointmentItem(db.Model):
     
     def __repr__(self):
         return f'<AppointmentItem {self.service_item_id} for Appointment {self.appointment_id}>'
+
+
+class CustomerOrder(db.Model):
+    """Customer order for tires and services."""
+    __tablename__ = 'customer_orders'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    customer_name = db.Column(db.String(100), nullable=False)
+    customer_email = db.Column(db.String(120))
+    customer_phone = db.Column(db.String(20), nullable=False)
+    status = db.Column(db.String(20), default='new')  # new, accepted, in_progress, completed
+    total_price = db.Column(db.Numeric(10, 2), nullable=False, default=0)
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationship to order items
+    items = db.relationship('CustomerOrderItem', back_populates='order', cascade='all, delete-orphan')
+    
+    def __repr__(self):
+        return f'<CustomerOrder {self.id} - {self.customer_name} - {self.status}>'
+
+
+class CustomerOrderItem(db.Model):
+    """Items in a customer order."""
+    __tablename__ = 'customer_order_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('customer_orders.id'), nullable=False)
+    tire_id = db.Column(db.Integer, db.ForeignKey('tires.id'))
+    service_item_id = db.Column(db.Integer, db.ForeignKey('service_items.id'))
+    quantity = db.Column(db.Integer, default=1)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+    item_type = db.Column(db.String(20), nullable=False)  # 'tire' or 'service'
+    
+    # Relationships
+    order = db.relationship('CustomerOrder', back_populates='items')
+    tire = db.relationship('Tire')
+    service_item = db.relationship('ServiceItem')
+    
+    def __repr__(self):
+        return f'<CustomerOrderItem {self.id} for Order {self.order_id}>'

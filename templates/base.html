@@ -19,6 +19,9 @@
                     {% if current_user.is_authenticated %}
                         <li><a href="{{ url_for('dashboard') }}" {% if request.endpoint == 'dashboard' %}class="active"{% endif %}><i class="fas fa-dashboard"></i> Dashboard</a></li>
                         <li><a href="{{ url_for('inventory') }}" {% if request.endpoint == 'inventory' %}class="active"{% endif %}><i class="fas fa-boxes"></i> Inventory</a></li>
+                        {% if current_user.role in ['admin', 'sales'] %}
+                        <li><a href="{{ url_for('admin_orders') }}" {% if request.endpoint in ['admin_orders', 'admin_order_detail'] %}class="active"{% endif %}><i class="fas fa-receipt"></i> Orders</a></li>
+                        {% endif %}
                         <li><a href="{{ url_for('customer_order') }}" {% if request.endpoint == 'customer_order' %}class="active"{% endif %}><i class="fas fa-shopping-cart"></i> Order Tires</a></li>
                         {% if current_user.role in ['admin', 'sales'] %}
                         <li><a href="{{ url_for('add_tire') }}" {% if request.endpoint == 'add_tire' %}class="active"{% endif %}><i class="fas fa-plus-circle"></i> Add Tire</a></li>

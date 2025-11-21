@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.id }} - TireTrack Pro{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1><i class="fas fa-shopping-cart"></i> Order #{{ order.id }}</h1>
+                <p>View and manage order details</p>
+            </div>
+            <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
+        </div>
+    </div>
+    
+    <!-- Order Information -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <!-- Customer Information -->
+        <div class="card" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow-md);">
+            <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-primary);">
+                <i class="fas fa-user"></i> Customer Information
+            </h2>
+            
+            <div style="display: grid; gap: 1rem;">
+                <div>
+                    <label style="font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Name</label>
+                    <div style="font-size: 1.125rem;">{{ order.customer_name }}</div>
+                </div>
+                
+                {% if order.customer_email %}
+                <div>
+                    <label style="font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Email</label>
+                    <div><i class="fas fa-envelope"></i> {{ order.customer_email }}</div>
+                </div>
+                {% endif %}
+                
+                <div>
+                    <label style="font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Phone</label>
+                    <div><i class="fas fa-phone"></i> {{ order.customer_phone }}</div>
+                </div>
+                
+                <div>
+                    <label style="font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Order Date</label>
+                    <div><i class="fas fa-calendar"></i> {{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}</div>
+                </div>
+                
+                {% if order.notes %}
+                <div>
+                    <label style="font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.25rem;">Notes</label>
+                    <div style="background: #f3f4f6; padding: 1rem; border-radius: 8px;">{{ order.notes }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Order Status -->
+        <div class="card" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow-md);">
+            <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-primary);">
+                <i class="fas fa-info-circle"></i> Order Status
+            </h2>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Current Status</label>
+                <div id="current-status-display">
+                    <span class="status-badge status-{{ order.status|replace('_', '-') }}" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                        {% if order.status == 'new' %}
+                            <i class="fas fa-star"></i> New
+                        {% elif order.status == 'accepted' %}
+                            <i class="fas fa-check"></i> Accepted
+                        {% elif order.status == 'in_progress' %}
+                            <i class="fas fa-spinner"></i> In Progress
+                        {% elif order.status == 'completed' %}
+                            <i class="fas fa-check-circle"></i> Completed
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Change Status</label>
+                <select id="status-select" class="form-control" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem;">
+                    <option value="new" {% if order.status == 'new' %}selected{% endif %}>New</option>
+                    <option value="accepted" {% if order.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                    <option value="in_progress" {% if order.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+            </div>
+            
+            <button id="update-status-btn" class="btn btn-primary" style="width: 100%;">
+                <i class="fas fa-save"></i> Update Status
+            </button>
+            
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid var(--border-color);">
+                <label style="font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Total Amount</label>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">
+                    ${{ "%.2f"|format(order.total_price) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Order Items -->
+    <div class="card" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow-md);">
+        <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-primary);">
+            <i class="fas fa-box"></i> Order Items
+        </h2>
+        
+        <div class="inventory-table-container">
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Item</th>
+                        <th>Details</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items %}
+                    <tr>
+                        <td>
+                            {% if item.item_type == 'tire' %}
+                                <span class="type-badge all-season"><i class="fas fa-tire"></i> Tire</span>
+                            {% else %}
+                                <span class="type-badge performance"><i class="fas fa-tools"></i> Service</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.item_type == 'tire' and item.tire %}
+                                <strong>{{ item.tire.brand }} {{ item.tire.model }}</strong>
+                            {% elif item.item_type == 'service' and item.service_item %}
+                                <strong>{{ item.service_item.name }}</strong>
+                            {% else %}
+                                <em>Item not found</em>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.item_type == 'tire' and item.tire %}
+                                Size: {{ item.tire.size }}<br>
+                                Type: {{ item.tire.type }}
+                            {% elif item.item_type == 'service' and item.service_item %}
+                                {{ item.service_item.description }}
+                            {% endif %}
+                        </td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ "%.2f"|format(item.price / item.quantity) }}</td>
+                        <td><strong>${{ "%.2f"|format(item.price) }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                    <tr style="background-color: #f3f4f6; font-weight: 700;">
+                        <td colspan="5" style="text-align: right; padding: 1rem;">Order Total:</td>
+                        <td style="padding: 1rem; font-size: 1.25rem; color: var(--primary-color);">
+                            ${{ "%.2f"|format(order.total_price) }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.status-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.status-new {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.status-accepted {
+    background-color: #22c55e;
+    color: white;
+}
+
+.status-in-progress {
+    background-color: #f59e0b;
+    color: white;
+}
+
+.status-completed {
+    background-color: #8b5cf6;
+    color: white;
+}
+
+.card {
+    transition: box-shadow 0.3s ease;
+}
+</style>
+
+<script>
+document.getElementById('update-status-btn').addEventListener('click', function() {
+    const newStatus = document.getElementById('status-select').value;
+    const orderId = {{ order.id }};
+    
+    // Disable button to prevent double-clicks
+    this.disabled = true;
+    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+    
+    fetch(`/api/orders/${orderId}/status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the status display
+            const statusDisplay = document.getElementById('current-status-display');
+            const statusIcons = {
+                'new': '<i class="fas fa-star"></i> New',
+                'accepted': '<i class="fas fa-check"></i> Accepted',
+                'in_progress': '<i class="fas fa-spinner"></i> In Progress',
+                'completed': '<i class="fas fa-check-circle"></i> Completed'
+            };
+            
+            statusDisplay.innerHTML = `<span class="status-badge status-${newStatus.replace('_', '-')}" style="font-size: 1rem; padding: 0.5rem 1rem;">${statusIcons[newStatus]}</span>`;
+            
+            // Show success message
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success';
+            alertDiv.innerHTML = '<i class="fas fa-check-circle"></i> Order status updated successfully!';
+            alertDiv.style.cssText = 'position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px;';
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        } else {
+            alert('Error updating status: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating status. Please try again.');
+    })
+    .finally(() => {
+        // Re-enable button
+        this.disabled = false;
+        this.innerHTML = '<i class="fas fa-save"></i> Update Status';
+    });
+});
+</script>
+{% endblock %}
