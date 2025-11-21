@@ -342,8 +342,8 @@ def create_appointment():
         service = services[item_data['id']]
         quantity = item_data.get('quantity', 1)
         
-        # For "New Tires", duration is per tire
-        if service.name == 'New Tires':
+        # If the service is quantity-based, duration is per item
+        if getattr(service, 'is_quantity_based', False):
             duration = service.duration_minutes * quantity
         else:
             duration = service.duration_minutes
