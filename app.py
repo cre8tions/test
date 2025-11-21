@@ -117,7 +117,7 @@ def add_tire():
             warranty_months=request.form.get('warranty_months'),
             speed_rating=request.form.get('speed_rating'),
             load_index=request.form.get('load_index'),
-            special_order_available=bool(request.form.get('special_order_available')),
+            special_order_available='special_order_available' in request.form,
             created_by=current_user.id
         )
         db.session.add(tire)
