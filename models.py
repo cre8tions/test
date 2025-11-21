@@ -95,7 +95,7 @@ class ServiceItem(db.Model):
     description = db.Column(db.Text)
     duration_minutes = db.Column(db.Integer, nullable=False)  # Base duration in minutes
     price = db.Column(db.Numeric(10, 2), nullable=False)
-    max_concurrent = db.Column(db.Integer, default=1)  # Max number that can be scheduled simultaneously
+    max_concurrent = db.Column(db.Integer, nullable=True)  # Max number that can be scheduled simultaneously; None means unlimited
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
