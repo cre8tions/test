@@ -482,6 +482,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const card = document.createElement('div');
         card.className = `tire-card ${tire.in_stock ? '' : 'out-of-stock'}`;
         
+        // Escape HTML to prevent XSS
+        const escapeHtml = (text) => {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        };
+        
+        const escapedBrand = escapeHtml(tire.brand);
+        const escapedModel = escapeHtml(tire.model);
+        const escapedSize = escapeHtml(tire.size);
+        const escapedType = escapeHtml(tire.type);
+        const escapedSpeedRating = escapeHtml(tire.speed_rating);
+        const escapedLoadIndex = escapeHtml(tire.load_index);
+        const escapedDescription = escapeHtml(tire.description);
+        
         // Determine button properties
         let buttonClass, buttonIcon, buttonText, buttonDisabled, buttonOnClick;
         
@@ -490,13 +506,13 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonIcon = 'shopping-cart';
             buttonText = 'Add to Order';
             buttonDisabled = '';
-            buttonOnClick = `alert('Order placed for ${tire.brand} ${tire.model}!\\n\\nThis is a demo. In production, this would process the order.')`;
+            buttonOnClick = `alert('Order placed for ${escapedBrand} ${escapedModel}!\\n\\nThis is a demo. In production, this would process the order.')`;
         } else if (tire.special_order_available) {
             buttonClass = 'special-order';
             buttonIcon = 'clock';
             buttonText = 'Special Order';
             buttonDisabled = '';
-            buttonOnClick = `alert('Special order request submitted for ${tire.brand} ${tire.model}!\\n\\nThis is a demo. In production, this would process the special order with estimated delivery time.')`;
+            buttonOnClick = `alert('Special order request submitted for ${escapedBrand} ${escapedModel}!\\n\\nThis is a demo. In production, this would process the special order with estimated delivery time.')`;
         } else {
             buttonClass = 'unavailable';
             buttonIcon = 'ban';
@@ -508,8 +524,8 @@ document.addEventListener('DOMContentLoaded', function() {
         card.innerHTML = `
             <div class="tire-header">
                 <div>
-                    <div class="tire-brand">${tire.brand}</div>
-                    <div class="tire-model">${tire.model}</div>
+                    <div class="tire-brand">${escapedBrand}</div>
+                    <div class="tire-model">${escapedModel}</div>
                 </div>
                 <span class="stock-badge ${tire.in_stock ? 'in-stock' : 'out-of-stock'}">
                     ${tire.in_stock ? `${tire.quantity_in_stock} In Stock` : 'Out of Stock'}
@@ -519,22 +535,22 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="tire-details">
                 <div class="detail-row">
                     <span class="detail-label">Size:</span>
-                    <span class="detail-value">${tire.size}</span>
+                    <span class="detail-value">${escapedSize}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Type:</span>
-                    <span class="detail-value">${tire.type}</span>
+                    <span class="detail-value">${escapedType}</span>
                 </div>
                 ${tire.speed_rating ? `
                 <div class="detail-row">
                     <span class="detail-label">Speed Rating:</span>
-                    <span class="detail-value">${tire.speed_rating}</span>
+                    <span class="detail-value">${escapedSpeedRating}</span>
                 </div>
                 ` : ''}
                 ${tire.load_index ? `
                 <div class="detail-row">
                     <span class="detail-label">Load Index:</span>
-                    <span class="detail-value">${tire.load_index}</span>
+                    <span class="detail-value">${escapedLoadIndex}</span>
                 </div>
                 ` : ''}
                 ${tire.warranty_months ? `
@@ -547,7 +563,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             ${tire.description ? `
             <div class="tire-description">
-                ${tire.description}
+                ${escapedDescription}
             </div>
             ` : ''}
             
