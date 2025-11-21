@@ -606,20 +606,42 @@ document.addEventListener('DOMContentLoaded', function() {
         cart.forEach(item => {
             const itemEl = document.createElement('div');
             itemEl.className = 'cart-item';
-            itemEl.innerHTML = `
-                <div>
-                    <div style="font-weight: 600;">${item.name}</div>
-                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                        Qty: ${item.quantity} × $${item.price.toFixed(2)}
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="font-weight: 700; color: var(--primary-color);">$${(item.price * item.quantity).toFixed(2)}</span>
-                    <button class="cart-item-remove" data-service-id="${item.id}" aria-label="Remove ${item.name}">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
+
+            // Left section (name, qty, price)
+            const leftDiv = document.createElement('div');
+
+            const nameDiv = document.createElement('div');
+            nameDiv.style.fontWeight = '600';
+            nameDiv.textContent = item.name;
+            leftDiv.appendChild(nameDiv);
+
+            const qtyDiv = document.createElement('div');
+            qtyDiv.style.fontSize = '0.875rem';
+            qtyDiv.style.color = 'var(--text-secondary)';
+            qtyDiv.textContent = `Qty: ${item.quantity} × $${item.price.toFixed(2)}`;
+            leftDiv.appendChild(qtyDiv);
+
+            // Right section (total, remove button)
+            const rightDiv = document.createElement('div');
+            rightDiv.style.display = 'flex';
+            rightDiv.style.alignItems = 'center';
+            rightDiv.style.gap = '0.5rem';
+
+            const totalSpan = document.createElement('span');
+            totalSpan.style.fontWeight = '700';
+            totalSpan.style.color = 'var(--primary-color)';
+            totalSpan.textContent = `$${(item.price * item.quantity).toFixed(2)}`;
+            rightDiv.appendChild(totalSpan);
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'cart-item-remove';
+            removeBtn.setAttribute('data-service-id', item.id);
+            removeBtn.setAttribute('aria-label', `Remove ${item.name}`);
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            rightDiv.appendChild(removeBtn);
+
+            itemEl.appendChild(leftDiv);
+            itemEl.appendChild(rightDiv);
             cartItems.appendChild(itemEl);
         });
         
