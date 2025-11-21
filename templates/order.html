@@ -404,6 +404,25 @@
     height: 24px;
     cursor: pointer;
     font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.cart-item-remove:hover,
+.cart-item-remove:focus {
+    background: #dc2626;
+    transform: scale(1.1);
+    outline: none;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 </style>
