@@ -84,3 +84,64 @@ class VehicleTireSize(db.Model):
     
     def __repr__(self):
         return f'<VehicleTireSize {self.year} {self.make} {self.model} - {self.tire_size}>'
+
+
+class ServiceItem(db.Model):
+    """Service items that can be scheduled for appointments."""
+    __tablename__ = 'service_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    description = db.Column(db.Text)
+    duration_minutes = db.Column(db.Integer, nullable=False)  # Base duration in minutes
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+    max_concurrent = db.Column(db.Integer, default=1)  # Max number that can be scheduled simultaneously
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<ServiceItem {self.name}>'
+
+
+class Appointment(db.Model):
+    """Customer appointment for services."""
+    __tablename__ = 'appointments'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    customer_name = db.Column(db.String(100), nullable=False)
+    customer_phone = db.Column(db.String(20), nullable=False)
+    car_make = db.Column(db.String(50), nullable=False)
+    car_model = db.Column(db.String(50), nullable=False)
+    scheduled_date = db.Column(db.Date, nullable=False)
+    scheduled_time = db.Column(db.Time, nullable=False)
+    total_duration_minutes = db.Column(db.Integer, nullable=False)
+    total_price = db.Column(db.Numeric(10, 2), nullable=False)
+    status = db.Column(db.String(20), default='scheduled')  # scheduled, completed, cancelled
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationship to appointment items
+    items = db.relationship('AppointmentItem', back_populates='appointment', cascade='all, delete-orphan')
+    
+    def __repr__(self):
+        return f'<Appointment {self.customer_name} on {self.scheduled_date} at {self.scheduled_time}>'
+
+
+class AppointmentItem(db.Model):
+    """Join table for appointments and service items (many-to-many)."""
+    __tablename__ = 'appointment_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'), nullable=False)
+    service_item_id = db.Column(db.Integer, db.ForeignKey('service_items.id'), nullable=False)
+    quantity = db.Column(db.Integer, default=1)  # For items like "New Tires" where quantity matters
+    duration_minutes = db.Column(db.Integer, nullable=False)  # Actual duration for this item
+    price = db.Column(db.Numeric(10, 2), nullable=False)  # Price at time of booking
+    
+    # Relationships
+    appointment = db.relationship('Appointment', back_populates='items')
+    service_item = db.relationship('ServiceItem')
+    
+    def __repr__(self):
+        return f'<AppointmentItem {self.service_item_id} for Appointment {self.appointment_id}>'

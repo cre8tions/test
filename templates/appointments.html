@@ -1,0 +1,522 @@
+{% extends "base.html" %}
+
+{% block title %}Schedule Appointment - TireTrack Pro{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1000px; margin: 2rem auto; padding: 0 2rem;">
+    <div class="page-header" style="margin-bottom: 2rem;">
+        <h1 style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">
+            <i class="fas fa-calendar-check" style="color: var(--primary-color);"></i>
+            Schedule Appointment
+        </h1>
+        <p style="font-size: 1.125rem; color: var(--text-secondary);">
+            Book your service appointment with multiple services
+        </p>
+    </div>
+
+    <div class="card" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow-md);">
+        <form id="appointment-form">
+            <!-- Customer Information -->
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary); border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-user"></i> Customer Information
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label for="customer-name" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
+                            Customer Name <span style="color: red;">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="customer-name" 
+                            name="customer_name"
+                            placeholder="John Doe"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem;"
+                            required
+                        />
+                    </div>
+                    
+                    <div>
+                        <label for="customer-phone" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
+                            Phone Number <span style="color: red;">*</span>
+                        </label>
+                        <input 
+                            type="tel" 
+                            id="customer-phone" 
+                            name="customer_phone"
+                            placeholder="(555) 123-4567"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem;"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label for="car-make" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
+                            Car Make <span style="color: red;">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="car-make" 
+                            name="car_make"
+                            placeholder="Toyota"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem;"
+                            required
+                        />
+                    </div>
+                    
+                    <div>
+                        <label for="car-model" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
+                            Car Model <span style="color: red;">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="car-model" 
+                            name="car_model"
+                            placeholder="Camry"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem;"
+                            required
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Selection -->
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary); border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-wrench"></i> Select Services
+                </h2>
+                
+                <div id="service-items" style="display: grid; gap: 1rem;">
+                    <!-- Service items will be loaded here by JavaScript -->
+                </div>
+                
+                <div id="service-error" style="display: none; color: red; margin-top: 1rem; font-weight: 500;">
+                    <i class="fas fa-exclamation-circle"></i> Please select at least one service
+                </div>
+            </div>
+
+            <!-- Selected Services Summary -->
+            <div id="services-summary" style="display: none; margin-bottom: 2rem; padding: 1rem; background: var(--light-bg); border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">
+                    <i class="fas fa-list-check"></i> Selected Services
+                </h3>
+                <div id="summary-list" style="margin-bottom: 0.5rem;"></div>
+                <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid var(--border-color); margin-top: 0.5rem;">
+                    <span style="font-weight: 600;">Total Duration:</span>
+                    <span id="total-duration" style="font-weight: 600; color: var(--primary-color);">0 minutes</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="font-weight: 600;">Total Price:</span>
+                    <span id="total-price" style="font-weight: 600; color: var(--success-color); font-size: 1.25rem;">$0.00</span>
+                </div>
+            </div>
+
+            <!-- Date and Time Selection -->
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary); border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-clock"></i> Select Date & Time
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label for="appointment-date" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
+                            Date <span style="color: red;">*</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            id="appointment-date" 
+                            name="appointment_date"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem;"
+                            required
+                        />
+                        <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">
+                            Mon-Fri: 8:30 AM - 3:30 PM | Sat: 8:30 AM - 11:30 AM
+                        </small>
+                    </div>
+                    
+                    <div>
+                        <label for="appointment-time" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
+                            Time <span style="color: red;">*</span>
+                        </label>
+                        <input 
+                            type="time" 
+                            id="appointment-time" 
+                            name="appointment_time"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem;"
+                            required
+                        />
+                    </div>
+                </div>
+                
+                <div id="availability-status" style="display: none; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                    <!-- Availability message will be shown here -->
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div style="margin-bottom: 2rem;">
+                <label for="notes" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary);">
+                    Additional Notes (Optional)
+                </label>
+                <textarea 
+                    id="notes" 
+                    name="notes"
+                    rows="3"
+                    placeholder="Any special requests or additional information..."
+                    style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem; resize: vertical;"
+                ></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+                type="submit"
+                id="submit-button"
+                style="width: 100%; background: var(--gradient-primary); color: white; padding: 1rem; border: none; border-radius: 8px; font-size: 1.125rem; font-weight: 600; cursor: pointer; transition: transform 0.2s;"
+                onmouseover="this.style.transform='translateY(-2px)'"
+                onmouseout="this.style.transform='translateY(0)'"
+            >
+                <i class="fas fa-calendar-plus"></i> Schedule Appointment
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+.service-item-card {
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.service-item-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.service-item-card.selected {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+}
+
+.service-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.service-item-name {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: var(--text-primary);
+}
+
+.service-item-price {
+    font-weight: 600;
+    color: var(--success-color);
+}
+
+.service-item-details {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.quantity-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--primary-color);
+    background: white;
+    color: var(--primary-color);
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.quantity-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.quantity-display {
+    font-weight: 600;
+    min-width: 40px;
+    text-align: center;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let serviceItems = [];
+    let selectedServices = new Map();
+    
+    // Load service items
+    loadServiceItems();
+    
+    // Set minimum date to today
+    const dateInput = document.getElementById('appointment-date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.min = today;
+    
+    // Form submission
+    document.getElementById('appointment-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitAppointment();
+    });
+    
+    // Check availability when date/time changes
+    document.getElementById('appointment-date').addEventListener('change', checkAvailability);
+    document.getElementById('appointment-time').addEventListener('change', checkAvailability);
+    
+    async function loadServiceItems() {
+        try {
+            const response = await fetch('/api/service-items');
+            serviceItems = await response.json();
+            displayServiceItems();
+        } catch (error) {
+            console.error('Error loading service items:', error);
+            alert('Error loading service items. Please refresh the page.');
+        }
+    }
+    
+    function displayServiceItems() {
+        const container = document.getElementById('service-items');
+        container.innerHTML = '';
+        
+        serviceItems.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'service-item-card';
+            card.dataset.serviceId = item.id;
+            
+            let durationText = `${item.duration_minutes} minutes`;
+            if (item.name === 'New Tires') {
+                durationText = `${item.duration_minutes} minutes per tire`;
+            }
+            
+            card.innerHTML = `
+                <div class="service-item-header">
+                    <span class="service-item-name">
+                        <i class="fas fa-${getServiceIcon(item.name)}"></i>
+                        ${escapeHtml(item.name)}
+                    </span>
+                    <span class="service-item-price">$${item.price.toFixed(2)}</span>
+                </div>
+                <div class="service-item-details">
+                    ${escapeHtml(item.description)}
+                </div>
+                <div class="service-item-details">
+                    <i class="fas fa-clock"></i> ${durationText}
+                    ${item.max_concurrent < 999 ? ` | <i class="fas fa-users"></i> Max ${item.max_concurrent} concurrent` : ''}
+                </div>
+                ${item.name === 'New Tires' ? `
+                <div class="quantity-control" style="display: none;">
+                    <span>Number of tires:</span>
+                    <button type="button" class="quantity-btn" onclick="changeQuantity(${item.id}, -1)">-</button>
+                    <span class="quantity-display" id="quantity-${item.id}">4</span>
+                    <button type="button" class="quantity-btn" onclick="changeQuantity(${item.id}, 1)">+</button>
+                </div>
+                ` : ''}
+            `;
+            
+            card.addEventListener('click', function(e) {
+                if (!e.target.classList.contains('quantity-btn')) {
+                    toggleService(item);
+                }
+            });
+            
+            container.appendChild(card);
+        });
+    }
+    
+    function toggleService(item) {
+        const card = document.querySelector(`.service-item-card[data-service-id="${item.id}"]`);
+        
+        if (selectedServices.has(item.id)) {
+            selectedServices.delete(item.id);
+            card.classList.remove('selected');
+            if (item.name === 'New Tires') {
+                card.querySelector('.quantity-control').style.display = 'none';
+            }
+        } else {
+            const quantity = item.name === 'New Tires' ? 4 : 1;
+            selectedServices.set(item.id, { ...item, quantity });
+            card.classList.add('selected');
+            if (item.name === 'New Tires') {
+                card.querySelector('.quantity-control').style.display = 'flex';
+            }
+        }
+        
+        updateSummary();
+        document.getElementById('service-error').style.display = 'none';
+        checkAvailability();
+    }
+    
+    window.changeQuantity = function(serviceId, delta) {
+        const service = selectedServices.get(serviceId);
+        if (!service) return;
+        
+        const newQuantity = Math.max(1, Math.min(10, service.quantity + delta));
+        service.quantity = newQuantity;
+        document.getElementById(`quantity-${serviceId}`).textContent = newQuantity;
+        selectedServices.set(serviceId, service);
+        
+        updateSummary();
+        checkAvailability();
+    };
+    
+    function updateSummary() {
+        const summaryDiv = document.getElementById('services-summary');
+        const summaryList = document.getElementById('summary-list');
+        
+        if (selectedServices.size === 0) {
+            summaryDiv.style.display = 'none';
+            return;
+        }
+        
+        summaryDiv.style.display = 'block';
+        
+        let totalDuration = 0;
+        let totalPrice = 0;
+        let listHTML = '';
+        
+        selectedServices.forEach(service => {
+            let duration = service.duration_minutes;
+            let price = service.price;
+            
+            if (service.name === 'New Tires') {
+                duration *= service.quantity;
+                price *= service.quantity;
+            }
+            
+            totalDuration += duration;
+            totalPrice += price;
+            
+            const quantityText = service.quantity > 1 ? ` (x${service.quantity})` : '';
+            listHTML += `<div style="margin-bottom: 0.25rem;">• ${escapeHtml(service.name)}${quantityText} - ${duration} min - $${price.toFixed(2)}</div>`;
+        });
+        
+        summaryList.innerHTML = listHTML;
+        document.getElementById('total-duration').textContent = `${totalDuration} minutes`;
+        document.getElementById('total-price').textContent = `$${totalPrice.toFixed(2)}`;
+    }
+    
+    async function checkAvailability() {
+        const date = document.getElementById('appointment-date').value;
+        const time = document.getElementById('appointment-time').value;
+        const statusDiv = document.getElementById('availability-status');
+        
+        if (!date || !time || selectedServices.size === 0) {
+            statusDiv.style.display = 'none';
+            return;
+        }
+        
+        const serviceIds = Array.from(selectedServices.keys());
+        
+        try {
+            const response = await fetch('/api/check-availability', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date, time, service_ids: serviceIds })
+            });
+            
+            const data = await response.json();
+            
+            statusDiv.style.display = 'block';
+            if (data.available) {
+                statusDiv.style.background = 'var(--success-color)';
+                statusDiv.style.color = 'white';
+                statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Time slot is available!';
+            } else {
+                statusDiv.style.background = 'var(--danger-color)';
+                statusDiv.style.color = 'white';
+                statusDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${escapeHtml(data.reason)}`;
+            }
+        } catch (error) {
+            console.error('Error checking availability:', error);
+        }
+    }
+    
+    async function submitAppointment() {
+        if (selectedServices.size === 0) {
+            document.getElementById('service-error').style.display = 'block';
+            document.getElementById('service-items').scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+        
+        const formData = {
+            customer_name: document.getElementById('customer-name').value,
+            customer_phone: document.getElementById('customer-phone').value,
+            car_make: document.getElementById('car-make').value,
+            car_model: document.getElementById('car-model').value,
+            date: document.getElementById('appointment-date').value,
+            time: document.getElementById('appointment-time').value,
+            notes: document.getElementById('notes').value,
+            service_items: Array.from(selectedServices.values()).map(s => ({
+                id: s.id,
+                quantity: s.quantity
+            }))
+        };
+        
+        const submitButton = document.getElementById('submit-button');
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scheduling...';
+        
+        try {
+            const response = await fetch('/api/appointments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert(`✓ Appointment scheduled successfully!\n\nAppointment ID: ${data.appointment_id}\n\nYou will receive a confirmation shortly.`);
+                window.location.reload();
+            } else {
+                alert(`Error: ${data.error}`);
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-calendar-plus"></i> Schedule Appointment';
+            }
+        } catch (error) {
+            console.error('Error submitting appointment:', error);
+            alert('Error scheduling appointment. Please try again.');
+            submitButton.disabled = false;
+            submitButton.innerHTML = '<i class="fas fa-calendar-plus"></i> Schedule Appointment';
+        }
+    }
+    
+    function getServiceIcon(name) {
+        const icons = {
+            'Tire Rotation': 'sync',
+            'New Tires': 'tire',
+            'Alignment': 'ruler-horizontal',
+            'Inspection': 'clipboard-check',
+            'Emissions': 'smog'
+        };
+        return icons[name] || 'wrench';
+    }
+    
+    function escapeHtml(text) {
+        if (text == null) return '';
+        const div = document.createElement('div');
+        div.textContent = String(text);
+        return div.innerHTML;
+    }
+});
+</script>
+{% endblock %}
