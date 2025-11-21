@@ -381,20 +381,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         summaryDiv.style.display = 'block';
         
-        let totalDuration = 0;
         let totalPrice = 0;
         let listHTML = '';
         
         selectedServices.forEach(service => {
-            let duration = service.duration_minutes;
             let price = service.price;
             
             if (service.name === 'New Tires') {
-                duration *= service.quantity;
                 price *= service.quantity;
             }
             
-            totalDuration += duration;
             totalPrice += price;
             
             const quantityText = service.quantity > 1 ? ` (x${service.quantity})` : '';
