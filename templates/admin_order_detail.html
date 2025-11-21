@@ -148,7 +148,7 @@
                             {% endif %}
                         </td>
                         <td>{{ item.quantity }}</td>
-                        <td>${{ "%.2f"|format(item.price / item.quantity) }}</td>
+                        <td>${{ "%.2f"|format(item.price / item.quantity if item.quantity > 0 else 0) }}</td>
                         <td><strong>${{ "%.2f"|format(item.price) }}</strong></td>
                     </tr>
                     {% endfor %}
@@ -201,7 +201,7 @@
 <script>
 document.getElementById('update-status-btn').addEventListener('click', function() {
     const newStatus = document.getElementById('status-select').value;
-    const orderId = {{ order.id }};
+    const orderId = {{ order.id|tojson|safe }};
     
     // Disable button to prevent double-clicks
     this.disabled = true;
