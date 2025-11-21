@@ -263,19 +263,29 @@ def check_availability():
     data = request.get_json()
     appointment_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
     appointment_time = datetime.strptime(data['time'], '%H:%M').time()
-    service_ids = data['service_ids']
+    service_items = data.get('service_items', [])
     
     # Check if date/time is within business hours
     if not is_within_business_hours(appointment_date, appointment_time):
         return jsonify({'available': False, 'reason': 'Outside business hours'})
     
-    # Get service items
+    # Get service items and quantities
+    service_ids = [item['service_id'] for item in service_items]
     services = ServiceItem.query.filter(ServiceItem.id.in_(service_ids)).all()
     if len(services) != len(service_ids):
         return jsonify({'available': False, 'reason': 'Invalid service items'})
     
-    # Calculate total duration
-    total_duration = sum(s.duration_minutes for s in services)
+    # Map service_id to ServiceItem
+    service_map = {s.id: s for s in services}
+    
+    # Calculate total duration (same logic as in create_appointment)
+    total_duration = 0
+    for item in service_items:
+        service = service_map.get(item['service_id'])
+        if not service:
+            return jsonify({'available': False, 'reason': 'Invalid service item'})
+        quantity = item.get('quantity', 1)
+        total_duration += service.duration_minutes * quantity
     
     # Check if appointment would end within business hours
     end_time = (datetime.combine(appointment_date, appointment_time) + timedelta(minutes=total_duration)).time()
@@ -283,7 +293,13 @@ def check_availability():
         return jsonify({'available': False, 'reason': 'Appointment would extend beyond business hours'})
     
     # Check for conflicts with existing appointments
-    conflicts = check_scheduling_conflicts(appointment_date, appointment_time, services, total_duration)
+    # For conflict checking, expand services list to include each service the correct number of times
+    expanded_services = []
+    for item in service_items:
+        service = service_map.get(item['service_id'])
+        quantity = item.get('quantity', 1)
+        expanded_services.extend([service] * quantity)
+    conflicts = check_scheduling_conflicts(appointment_date, appointment_time, expanded_services, total_duration)
     
     if conflicts:
         return jsonify({'available': False, 'reason': 'Time slot conflicts with existing appointments'})
