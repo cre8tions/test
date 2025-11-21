@@ -7,11 +7,128 @@
     <div class="page-header" style="margin-bottom: 2rem;">
         <h1 style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">
             <i class="fas fa-shopping-cart" style="color: var(--primary-color);"></i>
-            Order Tires
+            Customer Orders
         </h1>
         <p style="font-size: 1.125rem; color: var(--text-secondary);">
-            Find the perfect tires for your vehicle by size or car make/model
+            Select a service or find the perfect tires for your vehicle
         </p>
+    </div>
+
+    <!-- Service Items Section -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="font-size: 1.75rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1.5rem;">
+            <i class="fas fa-tools" style="color: var(--primary-color);"></i>
+            Available Services
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <!-- Tire Rotation -->
+            <div class="service-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer;" 
+                 onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-xl)'; this.style.borderColor='var(--primary-color)';" 
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='transparent';"
+                 onclick="alert('Tire Rotation service selected!\nPrice: $49.99\n\nThis is a demo. In production, this would add the service to your order.')">
+                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                    <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                        <i class="fas fa-sync-alt" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 0;">Tire Rotation</h3>
+                        <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin: 0;">$49.99</p>
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
+                    Regular tire rotation extends tire life and ensures even wear patterns for optimal performance.
+                </p>
+            </div>
+
+            <!-- New Tires -->
+            <div class="service-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer;" 
+                 onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-xl)';" 
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)';"
+                 onclick="document.getElementById('tire-search-section').scrollIntoView({ behavior: 'smooth' });">
+                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                    <div style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                        <i class="fas fa-tire" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: white; margin: 0;">New Tires</h3>
+                        <p style="font-size: 1rem; font-weight: 600; color: rgba(255, 255, 255, 0.9); margin: 0;">Search Below</p>
+                    </div>
+                </div>
+                <p style="color: rgba(255, 255, 255, 0.95); font-size: 0.9rem; line-height: 1.5;">
+                    Browse our extensive tire inventory. Click to search by size or vehicle make/model.
+                </p>
+                <div style="margin-top: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.15); border-radius: 6px; text-align: center;">
+                    <span style="color: white; font-weight: 600; font-size: 0.85rem;">
+                        <i class="fas fa-arrow-down"></i> Click to Browse Tires
+                    </span>
+                </div>
+            </div>
+
+            <!-- Alignment -->
+            <div class="service-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer;" 
+                 onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-xl)'; this.style.borderColor='var(--primary-color)';" 
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='transparent';"
+                 onclick="alert('Alignment service selected!\nPrice: $89.99\n\nThis is a demo. In production, this would add the service to your order.')">
+                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                    <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                        <i class="fas fa-sliders-h" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 0;">Alignment</h3>
+                        <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin: 0;">$89.99</p>
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
+                    Precise wheel alignment improves handling, extends tire life, and enhances fuel efficiency.
+                </p>
+            </div>
+
+            <!-- Inspection -->
+            <div class="service-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer;" 
+                 onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-xl)'; this.style.borderColor='var(--primary-color)';" 
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='transparent';"
+                 onclick="alert('Inspection service selected!\nPrice: $29.99\n\nThis is a demo. In production, this would add the service to your order.')">
+                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                    <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                        <i class="fas fa-clipboard-check" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 0;">Inspection</h3>
+                        <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin: 0;">$29.99</p>
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
+                    Comprehensive vehicle inspection to ensure safety and identify potential issues early.
+                </p>
+            </div>
+
+            <!-- Emissions -->
+            <div class="service-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer;" 
+                 onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-xl)'; this.style.borderColor='var(--primary-color)';" 
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='transparent';"
+                 onclick="alert('Emissions test selected!\nPrice: $39.99\n\nThis is a demo. In production, this would add the service to your order.')">
+                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                    <div style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                        <i class="fas fa-smog" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 0;">Emissions</h3>
+                        <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin: 0;">$39.99</p>
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
+                    State-required emissions testing to ensure your vehicle meets environmental standards.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tire Search Section -->
+    <div id="tire-search-section" style="scroll-margin-top: 2rem;">
+        <h2 style="font-size: 1.75rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1.5rem;">
+            <i class="fas fa-search" style="color: var(--primary-color);"></i>
+            Search for Tires
+        </h2>
     </div>
 
     <!-- Search Options Cards -->
