@@ -516,29 +516,91 @@ document.addEventListener('DOMContentLoaded', function() {
             const descColor = isSpecial ? 'rgba(255, 255, 255, 0.95)' : 'var(--text-secondary)';
             const iconBg = isSpecial ? 'rgba(255, 255, 255, 0.2)' : 'var(--gradient-primary)';
             
-            card.innerHTML = `
-                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                    <div style="width: 50px; height: 50px; background: ${iconBg}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                        <i class="fas fa-${service.icon}" style="color: white; font-size: 1.5rem;"></i>
-                    </div>
-                    <div>
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: ${textColor}; margin: 0;">${service.name}</h3>
-                        <data value="${service.price}" style="font-size: ${isSpecial ? '1rem' : '1.5rem'}; font-weight: ${isSpecial ? '600' : '700'}; color: ${priceColor}; margin: 0; display: block;">
-                            ${service.price > 0 ? '$' + service.price.toFixed(2) : 'Search Below'}
-                        </data>
-                    </div>
-                </div>
-                <p style="color: ${descColor}; font-size: 0.9rem; line-height: 1.5;">
-                    ${service.description}
-                </p>
-                ${isSpecial ? `
-                <div style="margin-top: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.15); border-radius: 6px; text-align: center;">
-                    <span style="color: white; font-weight: 600; font-size: 0.85rem;">
-                        <i class="fas fa-arrow-down"></i> Click to Browse Tires
-                    </span>
-                </div>
-                ` : ''}
-            `;
+            // Build card content safely using DOM methods
+            card.innerHTML = ""; // Clear any existing content
+
+            // Top row: icon and name/price
+            const topRow = document.createElement('div');
+            topRow.style.display = 'flex';
+            topRow.style.alignItems = 'center';
+            topRow.style.marginBottom = '1rem';
+
+            // Icon container
+            const iconDiv = document.createElement('div');
+            iconDiv.style.width = '50px';
+            iconDiv.style.height = '50px';
+            iconDiv.style.background = iconBg;
+            iconDiv.style.borderRadius = '50%';
+            iconDiv.style.display = 'flex';
+            iconDiv.style.alignItems = 'center';
+            iconDiv.style.justifyContent = 'center';
+            iconDiv.style.marginRight = '1rem';
+
+            // Validate icon class: allow only alphanumeric, dash, underscore
+            let iconClass = typeof service.icon === 'string' && /^[\w-]+$/.test(service.icon) ? service.icon : 'question-circle';
+            const iconElem = document.createElement('i');
+            iconElem.className = `fas fa-${iconClass}`;
+            iconElem.style.color = 'white';
+            iconElem.style.fontSize = '1.5rem';
+            iconDiv.appendChild(iconElem);
+
+            // Name and price container
+            const namePriceDiv = document.createElement('div');
+
+            const nameElem = document.createElement('h3');
+            nameElem.style.fontSize = '1.25rem';
+            nameElem.style.fontWeight = '600';
+            nameElem.style.color = textColor;
+            nameElem.style.margin = '0';
+            nameElem.textContent = service.name;
+
+            const dataElem = document.createElement('data');
+            dataElem.value = service.price;
+            dataElem.style.fontSize = isSpecial ? '1rem' : '1.5rem';
+            dataElem.style.fontWeight = isSpecial ? '600' : '700';
+            dataElem.style.color = priceColor;
+            dataElem.style.margin = '0';
+            dataElem.style.display = 'block';
+            dataElem.textContent = service.price > 0 ? ('$' + service.price.toFixed(2)) : 'Search Below';
+
+            namePriceDiv.appendChild(nameElem);
+            namePriceDiv.appendChild(dataElem);
+
+            topRow.appendChild(iconDiv);
+            topRow.appendChild(namePriceDiv);
+
+            // Description
+            const descElem = document.createElement('p');
+            descElem.style.color = descColor;
+            descElem.style.fontSize = '0.9rem';
+            descElem.style.lineHeight = '1.5';
+            descElem.textContent = service.description;
+
+            card.appendChild(topRow);
+            card.appendChild(descElem);
+
+            // Special action (if isSpecial)
+            if (isSpecial) {
+                const specialDiv = document.createElement('div');
+                specialDiv.style.marginTop = '1rem';
+                specialDiv.style.padding = '0.5rem';
+                specialDiv.style.background = 'rgba(255, 255, 255, 0.15)';
+                specialDiv.style.borderRadius = '6px';
+                specialDiv.style.textAlign = 'center';
+
+                const specialSpan = document.createElement('span');
+                specialSpan.style.color = 'white';
+                specialSpan.style.fontWeight = '600';
+                specialSpan.style.fontSize = '0.85rem';
+
+                const arrowIcon = document.createElement('i');
+                arrowIcon.className = 'fas fa-arrow-down';
+                specialSpan.appendChild(arrowIcon);
+                specialSpan.appendChild(document.createTextNode(' Click to Browse Tires'));
+
+                specialDiv.appendChild(specialSpan);
+                card.appendChild(specialDiv);
+            }
             
             // Add click handler
             const handleClick = () => {
