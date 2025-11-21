@@ -110,10 +110,6 @@
                 </h3>
                 <div id="summary-list" style="margin-bottom: 0.5rem;"></div>
                 <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid var(--border-color); margin-top: 0.5rem;">
-                    <span style="font-weight: 600;">Total Duration:</span>
-                    <span id="total-duration" style="font-weight: 600; color: var(--primary-color);">0 minutes</span>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
                     <span style="font-weight: 600;">Total Price:</span>
                     <span id="total-price" style="font-weight: 600; color: var(--success-color); font-size: 1.25rem;">$0.00</span>
                 </div>
@@ -307,11 +303,6 @@ document.addEventListener('DOMContentLoaded', function() {
             card.className = 'service-item-card';
             card.dataset.serviceId = item.id;
             
-            let durationText = `${item.duration_minutes} minutes`;
-            if (item.name === 'New Tires') {
-                durationText = `${item.duration_minutes} minutes per tire`;
-            }
-            
             card.innerHTML = `
                 <div class="service-item-header">
                     <span class="service-item-name">
@@ -322,10 +313,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="service-item-details">
                     ${escapeHtml(item.description)}
-                </div>
-                <div class="service-item-details">
-                    <i class="fas fa-clock"></i> ${durationText}
-                    ${item.max_concurrent < 999 ? ` | <i class="fas fa-users"></i> Max ${item.max_concurrent} concurrent` : ''}
                 </div>
                 ${item.name === 'New Tires' ? `
                 <div class="quantity-control" style="display: none;">
@@ -411,11 +398,10 @@ document.addEventListener('DOMContentLoaded', function() {
             totalPrice += price;
             
             const quantityText = service.quantity > 1 ? ` (x${service.quantity})` : '';
-            listHTML += `<div style="margin-bottom: 0.25rem;">• ${escapeHtml(service.name)}${quantityText} - ${duration} min - $${price.toFixed(2)}</div>`;
+            listHTML += `<div style="margin-bottom: 0.25rem;">• ${escapeHtml(service.name)}${quantityText} - $${price.toFixed(2)}</div>`;
         });
         
         summaryList.innerHTML = listHTML;
-        document.getElementById('total-duration').textContent = `${totalDuration} minutes`;
         document.getElementById('total-price').textContent = `$${totalPrice.toFixed(2)}`;
     }
     
