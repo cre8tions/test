@@ -495,9 +495,13 @@ document.addEventListener('DOMContentLoaded', function() {
             return text.replace(/\\/g, '\\\\')
                       .replace(/'/g, "\\'")
                       .replace(/"/g, '\\"')
+                      .replace(/`/g, '\\`')
+                      .replace(/\$/g, '\\$')
                       .replace(/\n/g, '\\n')
                       .replace(/\r/g, '\\r')
-                      .replace(/\t/g, '\\t');
+                      .replace(/\t/g, '\\t')
+                      .replace(/</g, '\\u003C')
+                      .replace(/>/g, '\\u003E');
         };
         
         const escapedBrand = escapeHtml(tire.brand);
