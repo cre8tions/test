@@ -734,9 +734,12 @@ document.addEventListener('DOMContentLoaded', function() {
             z-index: 2000;
             animation: slideIn 0.3s ease;
         `;
-        notification.innerHTML = `
-            <i class="fas fa-check-circle"></i> ${serviceName} added to order!
-        `;
+        // Safely construct notification content
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-check-circle';
+        notification.appendChild(icon);
+        notification.appendChild(document.createTextNode(' '));
+        notification.appendChild(document.createTextNode(serviceName + ' added to order!'));
         document.body.appendChild(notification);
         
         setTimeout(() => {
