@@ -152,7 +152,7 @@ def edit_tire(tire_id):
         tire.warranty_months = request.form.get('warranty_months')
         tire.speed_rating = request.form.get('speed_rating')
         tire.load_index = request.form.get('load_index')
-        tire.special_order_available = bool(request.form.get('special_order_available'))
+        tire.special_order_available = 'special_order_available' in request.form
         
         db.session.commit()
         flash('Tire updated successfully!', 'success')
