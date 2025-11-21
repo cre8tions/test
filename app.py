@@ -2,11 +2,11 @@
 Main Flask application module for the tire store inventory management application.
 """
 import os
+from datetime import datetime, timedelta
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from models import db, User, Tire, VehicleTireSize
+from models import db, User, Tire, VehicleTireSize, ServiceItem, Appointment, AppointmentItem
 from functools import wraps
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tire_store.db'
@@ -233,6 +233,241 @@ def get_tires_by_size(size):
         'load_index': tire.load_index,
         'special_order_available': tire.special_order_available
     } for tire in tires])
+
+
+@app.route('/appointments')
+def appointments():
+    """Appointment scheduling page."""
+    return render_template('appointments.html')
+
+
+@app.route('/api/service-items')
+def get_service_items():
+    """API endpoint to get all active service items."""
+    items = ServiceItem.query.filter_by(is_active=True).order_by(ServiceItem.name).all()
+    return jsonify([{
+        'id': item.id,
+        'name': item.name,
+        'description': item.description,
+        'duration_minutes': item.duration_minutes,
+        'price': float(item.price),
+        'max_concurrent': item.max_concurrent
+    } for item in items])
+
+
+@app.route('/api/check-availability', methods=['POST'])
+def check_availability():
+    """Check if a time slot is available for the selected services."""
+    data = request.get_json()
+    appointment_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
+    appointment_time = datetime.strptime(data['time'], '%H:%M').time()
+    service_items = data.get('service_items', [])
+    
+    # Check if date/time is within business hours
+    if not is_within_business_hours(appointment_date, appointment_time):
+        return jsonify({'available': False, 'reason': 'Outside business hours'})
+    
+    # Get service items and quantities
+    service_ids = [item['service_id'] for item in service_items]
+    services = ServiceItem.query.filter(ServiceItem.id.in_(service_ids)).all()
+    if len(services) != len(service_ids):
+        return jsonify({'available': False, 'reason': 'Invalid service items'})
+    
+    # Map service_id to ServiceItem
+    service_map = {s.id: s for s in services}
+    
+    # Calculate total duration (same logic as in create_appointment)
+    total_duration = 0
+    for item in service_items:
+        service = service_map.get(item['service_id'])
+        if not service:
+            return jsonify({'available': False, 'reason': 'Invalid service item'})
+        quantity = item.get('quantity', 1)
+        total_duration += service.duration_minutes * quantity
+    
+    # Check if appointment would end within business hours
+    end_time = (datetime.combine(appointment_date, appointment_time) + timedelta(minutes=total_duration)).time()
+    if not is_within_business_hours(appointment_date, end_time):
+        return jsonify({'available': False, 'reason': 'Appointment would extend beyond business hours'})
+    
+    # Check for conflicts with existing appointments
+    # For conflict checking, expand services list to include each service the correct number of times
+    expanded_services = []
+    for item in service_items:
+        service = service_map.get(item['service_id'])
+        quantity = item.get('quantity', 1)
+        expanded_services.extend([service] * quantity)
+    conflicts = check_scheduling_conflicts(appointment_date, appointment_time, expanded_services, total_duration)
+    
+    if conflicts:
+        return jsonify({'available': False, 'reason': 'Time slot conflicts with existing appointments'})
+    
+    return jsonify({'available': True})
+
+
+@app.route('/api/appointments', methods=['POST'])
+def create_appointment():
+    """Create a new appointment with multiple service items."""
+    data = request.get_json()
+    
+    # Validate input
+    required_fields = ['customer_name', 'customer_phone', 'car_make', 'car_model', 'date', 'time', 'service_items']
+    for field in required_fields:
+        if field not in data or not data[field]:
+            return jsonify({'success': False, 'error': f'Missing required field: {field}'}), 400
+    
+    try:
+        appointment_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
+        appointment_time = datetime.strptime(data['time'], '%H:%M').time()
+    except ValueError:
+        return jsonify({'success': False, 'error': 'Invalid date or time format'}), 400
+    
+    # Validate service items
+    service_items_data = data['service_items']
+    if not service_items_data:
+        return jsonify({'success': False, 'error': 'At least one service item required'}), 400
+    
+    # Get service items from database
+    service_ids = [item['id'] for item in service_items_data]
+    services = {s.id: s for s in ServiceItem.query.filter(ServiceItem.id.in_(service_ids)).all()}
+    
+    if len(services) != len(service_ids):
+        return jsonify({'success': False, 'error': 'Invalid service items'}), 400
+    
+    # Calculate totals
+    total_duration = 0
+    total_price = 0
+    
+    for item_data in service_items_data:
+        service = services[item_data['id']]
+        quantity = item_data.get('quantity', 1)
+        
+        # If the service is quantity-based, duration is per item
+        if getattr(service, 'is_quantity_based', False):
+            duration = service.duration_minutes * quantity
+        else:
+            duration = service.duration_minutes
+        
+        total_duration += duration
+        total_price += float(service.price) * quantity
+    
+    # Check availability one more time
+    if not is_within_business_hours(appointment_date, appointment_time):
+        return jsonify({'success': False, 'error': 'Outside business hours'}), 400
+    
+    end_time = (datetime.combine(appointment_date, appointment_time) + timedelta(minutes=total_duration)).time()
+    if not is_within_business_hours(appointment_date, end_time):
+        return jsonify({'success': False, 'error': 'Appointment would extend beyond business hours'}), 400
+    
+    conflicts = check_scheduling_conflicts(appointment_date, appointment_time, services.values(), total_duration)
+    if conflicts:
+        return jsonify({'success': False, 'error': 'Time slot no longer available'}), 400
+    
+    # Create appointment
+    appointment = Appointment(
+        customer_name=data['customer_name'],
+        customer_phone=data['customer_phone'],
+        car_make=data['car_make'],
+        car_model=data['car_model'],
+        scheduled_date=appointment_date,
+        scheduled_time=appointment_time,
+        total_duration_minutes=total_duration,
+        total_price=total_price,
+        notes=data.get('notes', '')
+    )
+    
+    db.session.add(appointment)
+    db.session.flush()  # Get the appointment ID
+    
+    # Create appointment items
+    for item_data in service_items_data:
+        service = services[item_data['id']]
+        quantity = item_data.get('quantity', 1)
+        
+        # Calculate duration for this specific item
+        if service.name == 'New Tires':
+            duration = service.duration_minutes * quantity
+        else:
+            duration = service.duration_minutes
+        
+        appointment_item = AppointmentItem(
+            appointment_id=appointment.id,
+            service_item_id=service.id,
+            quantity=quantity,
+            duration_minutes=duration,
+            price=float(service.price) * quantity
+        )
+        db.session.add(appointment_item)
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'appointment_id': appointment.id,
+        'message': 'Appointment scheduled successfully!'
+    })
+
+
+def is_within_business_hours(appointment_date, appointment_time):
+    """Check if the given date and time are within business hours."""
+    # Monday = 0, Saturday = 5, Sunday = 6
+    weekday = appointment_date.weekday()
+    
+    # Closed on Sundays
+    if weekday == 6:
+        return False
+    
+    # Convert time to minutes for easier comparison
+    time_minutes = appointment_time.hour * 60 + appointment_time.minute
+    
+    if weekday < 5:  # Monday-Friday: 8:30am - 3:30pm
+        open_time = 8 * 60 + 30  # 8:30am
+        close_time = 15 * 60 + 30  # 3:30pm
+    else:  # Saturday: 8:30am - 11:30am
+        open_time = 8 * 60 + 30  # 8:30am
+        close_time = 11 * 60 + 30  # 11:30am
+    
+    return open_time <= time_minutes < close_time
+
+
+def check_scheduling_conflicts(appointment_date, appointment_time, services, total_duration):
+    """
+    Check if scheduling the given services would conflict with existing appointments.
+    Returns list of conflicts (empty if no conflicts).
+    """
+    # Calculate time range for the new appointment
+    start_datetime = datetime.combine(appointment_date, appointment_time)
+    end_datetime = start_datetime + timedelta(minutes=total_duration)
+    
+    # Get all appointments on the same date
+    existing_appointments = Appointment.query.filter(
+        Appointment.scheduled_date == appointment_date,
+        Appointment.status == 'scheduled'
+    ).all()
+    
+    conflicts = []
+    
+    for service in services:
+        # Count how many of this service are already scheduled during the time range
+        concurrent_count = 0
+        
+        for existing in existing_appointments:
+            existing_start = datetime.combine(appointment_date, existing.scheduled_time)
+            existing_end = existing_start + timedelta(minutes=existing.total_duration_minutes)
+            
+            # Check if time ranges overlap
+            if not (end_datetime <= existing_start or start_datetime >= existing_end):
+                # Times overlap - check if this service is in the existing appointment
+                for item in existing.items:
+                    if item.service_item_id == service.id:
+                        concurrent_count += 1
+                        break
+        
+        # Check if we've exceeded the max concurrent for this service
+        if concurrent_count >= service.max_concurrent:
+            conflicts.append(f'{service.name} is fully booked at this time')
+    
+    return conflicts
 
 
 def init_db():
@@ -518,6 +753,49 @@ def init_db():
             
             for tire in additional_tires:
                 db.session.add(tire)
+            
+            # Add service items for appointment scheduling
+            if not ServiceItem.query.first():
+                service_items = [
+                    ServiceItem(
+                        name='Tire Rotation',
+                        description='Professional tire rotation service to extend tire life',
+                        duration_minutes=15,
+                        price=29.99,
+                        max_concurrent=2
+                    ),
+                    ServiceItem(
+                        name='New Tires',
+                        description='Installation of new tires (5 minutes per tire)',
+                        duration_minutes=5,  # Per tire
+                        price=25.00,  # Per tire installation
+                        max_concurrent=999  # No limit on tire installations
+                    ),
+                    ServiceItem(
+                        name='Alignment',
+                        description='Wheel alignment service for optimal handling',
+                        duration_minutes=60,
+                        price=79.99,
+                        max_concurrent=2
+                    ),
+                    ServiceItem(
+                        name='Inspection',
+                        description='Comprehensive vehicle inspection',
+                        duration_minutes=60,
+                        price=49.99,
+                        max_concurrent=1
+                    ),
+                    ServiceItem(
+                        name='Emissions',
+                        description='Emissions testing service',
+                        duration_minutes=30,
+                        price=35.00,
+                        max_concurrent=1
+                    ),
+                ]
+                
+                for item in service_items:
+                    db.session.add(item)
             
             db.session.commit()
             print('Database initialized with sample data.')

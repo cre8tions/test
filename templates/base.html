@@ -32,6 +32,7 @@
                     {% else %}
                         <li><a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}><i class="fas fa-home"></i> Home</a></li>
                         <li><a href="{{ url_for('customer_order') }}" {% if request.endpoint == 'customer_order' %}class="active"{% endif %}><i class="fas fa-shopping-cart"></i> Order Tires</a></li>
+                        <li><a href="{{ url_for('appointments') }}" {% if request.endpoint == 'appointments' %}class="active"{% endif %}><i class="fas fa-calendar-check"></i> Appointments</a></li>
                         <li><a href="{{ url_for('login') }}" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login</a></li>
                     {% endif %}
                 </ul>
