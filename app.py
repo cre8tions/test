@@ -427,7 +427,7 @@ def is_within_business_hours(appointment_date, appointment_time):
         open_time = 8 * 60 + 30  # 8:30am
         close_time = 11 * 60 + 30  # 11:30am
     
-    return open_time <= time_minutes <= close_time
+    return open_time <= time_minutes < close_time
 
 
 def check_scheduling_conflicts(appointment_date, appointment_time, services, total_duration):
