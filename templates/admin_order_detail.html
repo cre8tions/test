@@ -244,7 +244,7 @@ document.getElementById('update-status-btn').addEventListener('click', function(
                 alertDiv.remove();
             }, 3000);
         } else {
-            alert('Error updating status: ' + (data.error || 'Unknown error'));
+            alert(`Error updating status: ${data.error || 'Unknown error'}`);
         }
     })
     .catch(error => {
