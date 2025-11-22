@@ -10,6 +10,7 @@
     </div>
     
     <form method="POST" action="{{ url_for('edit_tire', tire_id=tire.id) }}" class="tire-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="form-section">
             <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
             <div class="form-row">

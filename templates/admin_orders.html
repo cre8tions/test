@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Orders - TireTrack Pro{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1><i class="fas fa-shopping-cart"></i> Customer Orders</h1>
+        <p>Manage and track all customer orders</p>
+    </div>
+    
+    <!-- Filter Buttons -->
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+        <a href="{{ url_for('admin_orders') }}" class="btn {% if not current_filter %}btn-primary{% else %}btn-secondary{% endif %}">
+            <i class="fas fa-list"></i> All Orders
+        </a>
+        <a href="{{ url_for('admin_orders', status='new') }}" class="btn {% if current_filter == 'new' %}btn-primary{% else %}btn-secondary{% endif %}">
+            <i class="fas fa-star"></i> New
+        </a>
+        <a href="{{ url_for('admin_orders', status='accepted') }}" class="btn {% if current_filter == 'accepted' %}btn-primary{% else %}btn-secondary{% endif %}">
+            <i class="fas fa-check"></i> Accepted
+        </a>
+        <a href="{{ url_for('admin_orders', status='in_progress') }}" class="btn {% if current_filter == 'in_progress' %}btn-primary{% else %}btn-secondary{% endif %}">
+            <i class="fas fa-spinner"></i> In Progress
+        </a>
+        <a href="{{ url_for('admin_orders', status='completed') }}" class="btn {% if current_filter == 'completed' %}btn-primary{% else %}btn-secondary{% endif %}">
+            <i class="fas fa-check-circle"></i> Completed
+        </a>
+    </div>
+    
+    <!-- Orders Stats -->
+    <div class="stats-grid" style="margin-bottom: 2rem;">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ all_orders|selectattr('status', 'equalto', 'new')|list|length }}</h3>
+                <p>New Orders</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ all_orders|selectattr('status', 'equalto', 'accepted')|list|length }}</h3>
+                <p>Accepted</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <i class="fas fa-spinner"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ all_orders|selectattr('status', 'equalto', 'in_progress')|list|length }}</h3>
+                <p>In Progress</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon purple">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ all_orders|selectattr('status', 'equalto', 'completed')|list|length }}</h3>
+                <p>Completed</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Orders List -->
+    <div class="recent-inventory">
+        <div class="section-header">
+            <h2><i class="fas fa-list"></i> 
+                {% if current_filter %}
+                    {{ current_filter|replace('_', ' ')|title }} Orders
+                {% else %}
+                    All Orders
+                {% endif %}
+            </h2>
+        </div>
+        
+        {% if orders %}
+        <div class="inventory-table-container">
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Contact</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td><strong>#{{ order.id }}</strong></td>
+                        <td>{{ order.customer_name }}</td>
+                        <td>
+                            <div style="font-size: 0.9rem;">
+                                {% if order.customer_email %}
+                                <div><i class="fas fa-envelope"></i> {{ order.customer_email }}</div>
+                                {% endif %}
+                                <div><i class="fas fa-phone"></i> {{ order.customer_phone }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            {{ order.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </td>
+                        <td><strong>${{ "%.2f"|format(order.total_price) }}</strong></td>
+                        <td>
+                            <span class="status-badge status-{{ order.status|replace('_', '-') }}">
+                                {% if order.status == 'new' %}
+                                    <i class="fas fa-star"></i> New
+                                {% elif order.status == 'accepted' %}
+                                    <i class="fas fa-check"></i> Accepted
+                                {% elif order.status == 'in_progress' %}
+                                    <i class="fas fa-spinner"></i> In Progress
+                                {% elif order.status == 'completed' %}
+                                    <i class="fas fa-check-circle"></i> Completed
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+            <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+            <p style="font-size: 1.125rem;">No orders found</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.status-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.status-new {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.status-accepted {
+    background-color: #22c55e;
+    color: white;
+}
+
+.status-in-progress {
+    background-color: #f59e0b;
+    color: white;
+}
+
+.status-completed {
+    background-color: #8b5cf6;
+    color: white;
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}

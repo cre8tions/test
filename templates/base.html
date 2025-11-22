@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{% block title %}Tire Store Management{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,6 +20,9 @@
                     {% if current_user.is_authenticated %}
                         <li><a href="{{ url_for('dashboard') }}" {% if request.endpoint == 'dashboard' %}class="active"{% endif %}><i class="fas fa-dashboard"></i> Dashboard</a></li>
                         <li><a href="{{ url_for('inventory') }}" {% if request.endpoint == 'inventory' %}class="active"{% endif %}><i class="fas fa-boxes"></i> Inventory</a></li>
+                        {% if current_user.role in ['admin', 'sales'] %}
+                        <li><a href="{{ url_for('admin_orders') }}" {% if request.endpoint in ['admin_orders', 'admin_order_detail'] %}class="active"{% endif %}><i class="fas fa-receipt"></i> Orders</a></li>
+                        {% endif %}
                         <li><a href="{{ url_for('customer_order') }}" {% if request.endpoint == 'customer_order' %}class="active"{% endif %}><i class="fas fa-shopping-cart"></i> Order Tires</a></li>
                         {% if current_user.role in ['admin', 'sales'] %}
                         <li><a href="{{ url_for('add_tire') }}" {% if request.endpoint == 'add_tire' %}class="active"{% endif %}><i class="fas fa-plus-circle"></i> Add Tire</a></li>

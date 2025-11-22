@@ -5,7 +5,8 @@ import os
 from datetime import datetime, timedelta
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from models import db, User, Tire, VehicleTireSize, ServiceItem, Appointment, AppointmentItem
+from flask_wtf.csrf import CSRFProtect
+from models import db, User, Tire, VehicleTireSize, ServiceItem, Appointment, AppointmentItem, CustomerOrder, CustomerOrderItem
 from functools import wraps
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
@@ -18,6 +19,7 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+csrf = CSRFProtect(app)
 
 
 @login_manager.user_loader
@@ -470,6 +472,60 @@ def check_scheduling_conflicts(appointment_date, appointment_time, services, tot
     return conflicts
 
 
+@app.route('/admin/orders')
+@login_required
+@role_required('admin', 'sales')
+def admin_orders():
+    """Admin page to view all customer orders."""
+    status_filter = request.args.get('status', '')
+    
+    # Get all orders for stats (regardless of filter)
+    all_orders = CustomerOrder.query.all()
+    
+    # Get filtered orders for display
+    query = CustomerOrder.query
+    if status_filter:
+        query = query.filter_by(status=status_filter)
+    
+    orders = query.order_by(CustomerOrder.created_at.desc()).all()
+    return render_template('admin_orders.html', orders=orders, all_orders=all_orders, current_filter=status_filter)
+
+
+@app.route('/admin/orders/<int:order_id>')
+@login_required
+@role_required('admin', 'sales')
+def admin_order_detail(order_id):
+    """Admin page to view order details."""
+    order = CustomerOrder.query.get_or_404(order_id)
+    return render_template('admin_order_detail.html', order=order)
+
+
+@app.route('/api/orders/<int:order_id>/status', methods=['POST'])
+@login_required
+@role_required('admin', 'sales')
+def update_order_status(order_id):
+    """API endpoint to update order status."""
+    order = CustomerOrder.query.get_or_404(order_id)
+    data = request.get_json()
+    if not data:
+        return jsonify({'success': False, 'error': 'Invalid request body'}), 400
+    new_status = data.get('status')
+    if not new_status:
+        return jsonify({'success': False, 'error': 'Missing status field'}), 400
+    valid_statuses = ['new', 'accepted', 'in_progress', 'completed']
+    if new_status not in valid_statuses:
+        return jsonify({'success': False, 'error': 'Invalid status'}), 400
+    
+    order.status = new_status
+    order.updated_at = datetime.utcnow()
+    try:
+        db.session.commit()
+        return jsonify({'success': True, 'status': new_status})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': 'Database error occurred'}), 500
+
+
 def init_db():
     """Initialize database with sample data."""
     with app.app_context():
@@ -796,6 +852,189 @@ def init_db():
                 
                 for item in service_items:
                     db.session.add(item)
+            
+            # Add sample customer orders
+            if not CustomerOrder.query.first():
+                # Get some tires and services for the orders
+                tire1 = Tire.query.filter_by(brand='Michelin', model='Pilot Sport 4S').first()
+                tire2 = Tire.query.filter_by(brand='Bridgestone', model='Blizzak WS90').first()
+                tire3 = Tire.query.filter_by(brand='Goodyear', model='Assurance WeatherReady').first()
+                service_rotation = ServiceItem.query.filter_by(name='Tire Rotation').first()
+                service_alignment = ServiceItem.query.filter_by(name='Alignment').first()
+                
+                # Order 1: New order
+                order1 = CustomerOrder(
+                    customer_name='John Smith',
+                    customer_email='john.smith@email.com',
+                    customer_phone='555-0101',
+                    status='new',
+                    total_price=0,  # Will be calculated from items
+                    notes='Customer wants performance tires for summer driving',
+                    created_at=datetime.utcnow() - timedelta(hours=2)
+                )
+                db.session.add(order1)
+                db.session.flush()
+                
+                order1_total = 0
+                if tire1:
+                    order1_item1 = CustomerOrderItem(
+                        order_id=order1.id,
+                        tire_id=tire1.id,
+                        quantity=4,
+                        price=tire1.retail_price * 4,
+                        item_type='tire'
+                    )
+                    db.session.add(order1_item1)
+                    order1_total += float(tire1.retail_price * 4)
+                order1.total_price = order1_total
+                
+                # Order 2: Accepted order
+                order2 = CustomerOrder(
+                    customer_name='Sarah Johnson',
+                    customer_email='sarah.j@email.com',
+                    customer_phone='555-0102',
+                    status='accepted',
+                    total_price=0,  # Will be calculated from items
+                    notes='Winter tires needed before next week',
+                    created_at=datetime.utcnow() - timedelta(days=1)
+                )
+                db.session.add(order2)
+                db.session.flush()
+                
+                order2_total = 0
+                if tire2:
+                    order2_item1 = CustomerOrderItem(
+                        order_id=order2.id,
+                        tire_id=tire2.id,
+                        quantity=4,
+                        price=tire2.retail_price * 4,
+                        item_type='tire'
+                    )
+                    db.session.add(order2_item1)
+                    order2_total += float(tire2.retail_price * 4)
+                
+                if service_rotation:
+                    order2_item2 = CustomerOrderItem(
+                        order_id=order2.id,
+                        service_item_id=service_rotation.id,
+                        quantity=1,
+                        price=service_rotation.price,
+                        item_type='service'
+                    )
+                    db.session.add(order2_item2)
+                    order2_total += float(service_rotation.price)
+                order2.total_price = order2_total
+                
+                # Order 3: In progress order
+                order3 = CustomerOrder(
+                    customer_name='Michael Davis',
+                    customer_email='m.davis@email.com',
+                    customer_phone='555-0103',
+                    status='in_progress',
+                    total_price=0,  # Will be calculated from items
+                    notes='All-season tires for daily commute',
+                    created_at=datetime.utcnow() - timedelta(days=2)
+                )
+                db.session.add(order3)
+                db.session.flush()
+                
+                order3_total = 0
+                if tire3:
+                    order3_item1 = CustomerOrderItem(
+                        order_id=order3.id,
+                        tire_id=tire3.id,
+                        quantity=4,
+                        price=tire3.retail_price * 4,
+                        item_type='tire'
+                    )
+                    db.session.add(order3_item1)
+                    order3_total += float(tire3.retail_price * 4)
+                
+                if service_alignment:
+                    order3_item2 = CustomerOrderItem(
+                        order_id=order3.id,
+                        service_item_id=service_alignment.id,
+                        quantity=1,
+                        price=service_alignment.price,
+                        item_type='service'
+                    )
+                    db.session.add(order3_item2)
+                    order3_total += float(service_alignment.price)
+                order3.total_price = order3_total
+                
+                # Order 4: Completed order
+                order4 = CustomerOrder(
+                    customer_name='Emily Wilson',
+                    customer_email='emily.w@email.com',
+                    customer_phone='555-0104',
+                    status='completed',
+                    total_price=0,  # Will be calculated from items
+                    notes='Replacement tires completed successfully',
+                    created_at=datetime.utcnow() - timedelta(days=5)
+                )
+                db.session.add(order4)
+                db.session.flush()
+                
+                order4_total = 0
+                if tire3:
+                    order4_item1 = CustomerOrderItem(
+                        order_id=order4.id,
+                        tire_id=tire3.id,
+                        quantity=4,
+                        price=tire3.retail_price * 4,
+                        item_type='tire'
+                    )
+                    db.session.add(order4_item1)
+                    order4_total += float(tire3.retail_price * 4)
+                order4.total_price = order4_total
+                
+                # Order 5: Another new order
+                order5 = CustomerOrder(
+                    customer_name='Robert Brown',
+                    customer_email='r.brown@email.com',
+                    customer_phone='555-0105',
+                    status='new',
+                    total_price=0,  # Will be calculated from items
+                    notes='Looking for high-performance tires',
+                    created_at=datetime.utcnow() - timedelta(hours=5)
+                )
+                db.session.add(order5)
+                db.session.flush()
+                
+                order5_total = 0
+                if tire1:
+                    order5_item1 = CustomerOrderItem(
+                        order_id=order5.id,
+                        tire_id=tire1.id,
+                        quantity=2,
+                        price=tire1.retail_price * 2,
+                        item_type='tire'
+                    )
+                    db.session.add(order5_item1)
+                    order5_total += float(tire1.retail_price * 2)
+                
+                if service_rotation:
+                    order5_item2 = CustomerOrderItem(
+                        order_id=order5.id,
+                        service_item_id=service_rotation.id,
+                        quantity=1,
+                        price=service_rotation.price,
+                        item_type='service'
+                    )
+                    db.session.add(order5_item2)
+                    order5_total += float(service_rotation.price)
+                
+                if service_alignment:
+                    order5_item3 = CustomerOrderItem(
+                        order_id=order5.id,
+                        service_item_id=service_alignment.id,
+                        quantity=1,
+                        price=service_alignment.price,
+                        item_type='service'
+                    )
+                    db.session.add(order5_item3)
+                    order5_total += float(service_alignment.price)
+                order5.total_price = order5_total
             
             db.session.commit()
             print('Database initialized with sample data.')
