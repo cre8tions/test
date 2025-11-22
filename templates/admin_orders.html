@@ -35,7 +35,7 @@
                 <i class="fas fa-star"></i>
             </div>
             <div class="stat-content">
-                <h3>{{ orders|selectattr('status', 'equalto', 'new')|list|length }}</h3>
+                <h3>{{ all_orders|selectattr('status', 'equalto', 'new')|list|length }}</h3>
                 <p>New Orders</p>
             </div>
         </div>
@@ -45,7 +45,7 @@
                 <i class="fas fa-check"></i>
             </div>
             <div class="stat-content">
-                <h3>{{ orders|selectattr('status', 'equalto', 'accepted')|list|length }}</h3>
+                <h3>{{ all_orders|selectattr('status', 'equalto', 'accepted')|list|length }}</h3>
                 <p>Accepted</p>
             </div>
         </div>
@@ -55,7 +55,7 @@
                 <i class="fas fa-spinner"></i>
             </div>
             <div class="stat-content">
-                <h3>{{ orders|selectattr('status', 'equalto', 'in_progress')|list|length }}</h3>
+                <h3>{{ all_orders|selectattr('status', 'equalto', 'in_progress')|list|length }}</h3>
                 <p>In Progress</p>
             </div>
         </div>
@@ -65,7 +65,7 @@
                 <i class="fas fa-check-circle"></i>
             </div>
             <div class="stat-content">
-                <h3>{{ orders|selectattr('status', 'equalto', 'completed')|list|length }}</h3>
+                <h3>{{ all_orders|selectattr('status', 'equalto', 'completed')|list|length }}</h3>
                 <p>Completed</p>
             </div>
         </div>

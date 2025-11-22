@@ -477,12 +477,16 @@ def admin_orders():
     """Admin page to view all customer orders."""
     status_filter = request.args.get('status', '')
     
+    # Get all orders for stats (regardless of filter)
+    all_orders = CustomerOrder.query.all()
+    
+    # Get filtered orders for display
     query = CustomerOrder.query
     if status_filter:
         query = query.filter_by(status=status_filter)
     
     orders = query.order_by(CustomerOrder.created_at.desc()).all()
-    return render_template('admin_orders.html', orders=orders, current_filter=status_filter)
+    return render_template('admin_orders.html', orders=orders, all_orders=all_orders, current_filter=status_filter)
 
 
 @app.route('/admin/orders/<int:order_id>')
