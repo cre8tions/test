@@ -5,6 +5,7 @@ import os
 from datetime import datetime, timedelta
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_wtf.csrf import CSRFProtect
 from models import db, User, Tire, VehicleTireSize, ServiceItem, Appointment, AppointmentItem, CustomerOrder, CustomerOrderItem
 from functools import wraps
 app = Flask(__name__)
@@ -18,6 +19,7 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+csrf = CSRFProtect(app)
 
 
 @login_manager.user_loader

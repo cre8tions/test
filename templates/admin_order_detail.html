@@ -202,6 +202,7 @@
 document.getElementById('update-status-btn').addEventListener('click', function() {
     const newStatus = document.getElementById('status-select').value;
     const orderId = {{ order.id|tojson|safe }};
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     
     // Disable button to prevent double-clicks
     this.disabled = true;
@@ -211,6 +212,7 @@ document.getElementById('update-status-btn').addEventListener('click', function(
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({ status: newStatus })
     })
