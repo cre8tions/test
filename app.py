@@ -501,10 +501,12 @@ def update_order_status(order_id):
     """API endpoint to update order status."""
     order = CustomerOrder.query.get_or_404(order_id)
     data = request.get_json()
-    
+    if not data:
+        return jsonify({'success': False, 'error': 'Invalid request body'}), 400
     new_status = data.get('status')
+    if not new_status:
+        return jsonify({'success': False, 'error': 'Missing status field'}), 400
     valid_statuses = ['new', 'accepted', 'in_progress', 'completed']
-    
     if new_status not in valid_statuses:
         return jsonify({'success': False, 'error': 'Invalid status'}), 400
     
