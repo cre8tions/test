@@ -868,13 +868,14 @@ def init_db():
                     customer_email='john.smith@email.com',
                     customer_phone='555-0101',
                     status='new',
-                    total_price=1299.96,
+                    total_price=0,  # Will be calculated from items
                     notes='Customer wants performance tires for summer driving',
                     created_at=datetime.utcnow() - timedelta(hours=2)
                 )
                 db.session.add(order1)
                 db.session.flush()
                 
+                order1_total = 0
                 if tire1:
                     order1_item1 = CustomerOrderItem(
                         order_id=order1.id,
@@ -884,6 +885,8 @@ def init_db():
                         item_type='tire'
                     )
                     db.session.add(order1_item1)
+                    order1_total += float(tire1.retail_price * 4)
+                order1.total_price = order1_total
                 
                 # Order 2: Accepted order
                 order2 = CustomerOrder(
@@ -891,13 +894,14 @@ def init_db():
                     customer_email='sarah.j@email.com',
                     customer_phone='555-0102',
                     status='accepted',
-                    total_price=829.95,
+                    total_price=0,  # Will be calculated from items
                     notes='Winter tires needed before next week',
                     created_at=datetime.utcnow() - timedelta(days=1)
                 )
                 db.session.add(order2)
                 db.session.flush()
                 
+                order2_total = 0
                 if tire2:
                     order2_item1 = CustomerOrderItem(
                         order_id=order2.id,
@@ -907,6 +911,7 @@ def init_db():
                         item_type='tire'
                     )
                     db.session.add(order2_item1)
+                    order2_total += float(tire2.retail_price * 4)
                 
                 if service_rotation:
                     order2_item2 = CustomerOrderItem(
@@ -917,6 +922,8 @@ def init_db():
                         item_type='service'
                     )
                     db.session.add(order2_item2)
+                    order2_total += float(service_rotation.price)
+                order2.total_price = order2_total
                 
                 # Order 3: In progress order
                 order3 = CustomerOrder(
@@ -924,13 +931,14 @@ def init_db():
                     customer_email='m.davis@email.com',
                     customer_phone='555-0103',
                     status='in_progress',
-                    total_price=719.95,
+                    total_price=0,  # Will be calculated from items
                     notes='All-season tires for daily commute',
                     created_at=datetime.utcnow() - timedelta(days=2)
                 )
                 db.session.add(order3)
                 db.session.flush()
                 
+                order3_total = 0
                 if tire3:
                     order3_item1 = CustomerOrderItem(
                         order_id=order3.id,
@@ -940,6 +948,7 @@ def init_db():
                         item_type='tire'
                     )
                     db.session.add(order3_item1)
+                    order3_total += float(tire3.retail_price * 4)
                 
                 if service_alignment:
                     order3_item2 = CustomerOrderItem(
@@ -950,6 +959,8 @@ def init_db():
                         item_type='service'
                     )
                     db.session.add(order3_item2)
+                    order3_total += float(service_alignment.price)
+                order3.total_price = order3_total
                 
                 # Order 4: Completed order
                 order4 = CustomerOrder(
@@ -957,13 +968,14 @@ def init_db():
                     customer_email='emily.w@email.com',
                     customer_phone='555-0104',
                     status='completed',
-                    total_price=639.96,
+                    total_price=0,  # Will be calculated from items
                     notes='Replacement tires completed successfully',
                     created_at=datetime.utcnow() - timedelta(days=5)
                 )
                 db.session.add(order4)
                 db.session.flush()
                 
+                order4_total = 0
                 if tire3:
                     order4_item1 = CustomerOrderItem(
                         order_id=order4.id,
@@ -973,6 +985,8 @@ def init_db():
                         item_type='tire'
                     )
                     db.session.add(order4_item1)
+                    order4_total += float(tire3.retail_price * 4)
+                order4.total_price = order4_total
                 
                 # Order 5: Another new order
                 order5 = CustomerOrder(
@@ -980,13 +994,14 @@ def init_db():
                     customer_email='r.brown@email.com',
                     customer_phone='555-0105',
                     status='new',
-                    total_price=879.94,
+                    total_price=0,  # Will be calculated from items
                     notes='Looking for high-performance tires',
                     created_at=datetime.utcnow() - timedelta(hours=5)
                 )
                 db.session.add(order5)
                 db.session.flush()
                 
+                order5_total = 0
                 if tire1:
                     order5_item1 = CustomerOrderItem(
                         order_id=order5.id,
@@ -996,6 +1011,7 @@ def init_db():
                         item_type='tire'
                     )
                     db.session.add(order5_item1)
+                    order5_total += float(tire1.retail_price * 2)
                 
                 if service_rotation:
                     order5_item2 = CustomerOrderItem(
@@ -1006,6 +1022,7 @@ def init_db():
                         item_type='service'
                     )
                     db.session.add(order5_item2)
+                    order5_total += float(service_rotation.price)
                 
                 if service_alignment:
                     order5_item3 = CustomerOrderItem(
@@ -1016,6 +1033,8 @@ def init_db():
                         item_type='service'
                     )
                     db.session.add(order5_item3)
+                    order5_total += float(service_alignment.price)
+                order5.total_price = order5_total
             
             db.session.commit()
             print('Database initialized with sample data.')
