@@ -512,9 +512,12 @@ def update_order_status(order_id):
     
     order.status = new_status
     order.updated_at = datetime.utcnow()
-    db.session.commit()
-    
-    return jsonify({'success': True, 'status': new_status})
+    try:
+        db.session.commit()
+        return jsonify({'success': True, 'status': new_status})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': 'Database error occurred'}), 500
 
 
 def init_db():
